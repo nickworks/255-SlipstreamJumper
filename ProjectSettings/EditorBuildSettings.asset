@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1045 &1
+EditorBuildSettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Andrea/AndreaScene.unity
+    guid: 9efd8c33280ecc441a41ca218a0b2583
+  - enabled: 1
+    path: Assets/Breu/BreuScene.unity
+    guid: 9b846d06bef67d54f9315a21674d7fb7
+  - enabled: 1
+    path: Assets/Caughman/CaughmanScene.unity
+    guid: 4a5c878e8be25f94396b41c5ffd4eab4
+  - enabled: 1
+    path: Assets/Jennings/JenningsScene.unity
+    guid: ff123f246206c064da11d69889ee104e
+  - enabled: 1
+    path: Assets/Myles/MylesScene.unity
+    guid: 4e1ee1ea700073545a601de2dd74e23b
+  - enabled: 1
+    path: Assets/Petzak/PetzakScene.unity
+    guid: e11857059b548d540ae4c12e863f7d54
+  - enabled: 1
+    path: Assets/Powers/PowersScene.unity
+    guid: 5866fa780ba04d14ca9f9e2523327063
+  - enabled: 1
+    path: Assets/Smith/SmithScene.unity
+    guid: 2567a0bf254fcd345b29efbd90d02252
+  - enabled: 1
+    path: Assets/Stralle/StralleScene.unity
+    guid: 2044a3cce7a775e4f96b45c7cd05e84b
+  - enabled: 1
+    path: Assets/Takens/TakensScene.unity
+    guid: e2504d7261a399a46b2e884da4ec46aa
+  - enabled: 1
+    path: Assets/Wynalda/WynaldaScene.unity
+    guid: dbb5a7acbcb15ee48a56798b756ebb98
+  m_configObjects: {}
