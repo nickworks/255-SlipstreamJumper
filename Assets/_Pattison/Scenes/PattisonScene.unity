@@ -131,6 +131,7 @@ GameObject:
   - component: {fileID: 369474706}
   - component: {fileID: 369474705}
   - component: {fileID: 369474704}
+  - component: {fileID: 369474707}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -172,7 +173,7 @@ Camera:
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
-  orthographic: 0
+  orthographic: 1
   orthographic size: 5
   m_Depth: -1
   m_CullingMask:
@@ -203,6 +204,20 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &369474707
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 369474703}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3d52e26ad263144681a31eac7f44c00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  a: {fileID: 860460041}
+  b: {fileID: 633213193}
 --- !u!1 &633213192
 GameObject:
   m_ObjectHideFlags: 0
@@ -234,7 +249,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0978b4da49a55f4419f63a63e490143e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  size: {x: 1.46, y: 0.9, z: 0.56}
+  size: {x: 3, y: 1, z: 0.56}
 --- !u!23 &633213194
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -280,7 +295,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 633213192}
-  m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!4 &633213196
 Transform:
   m_ObjectHideFlags: 0
@@ -289,8 +304,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 633213192}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.292, y: 8.582, z: -2.032}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 2.861, y: 0.665, z: -0.02}
+  m_LocalScale: {x: 3, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 3
@@ -383,7 +398,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 860460035}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 8.9, z: 0}
+  m_LocalPosition: {x: 0, y: 0.541, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -416,7 +431,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0978b4da49a55f4419f63a63e490143e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  size: {x: 1.68, y: 2.15, z: 1.71}
+  size: {x: 1, y: 1, z: 1}
 --- !u!1 &1409222248
 GameObject:
   m_ObjectHideFlags: 0
