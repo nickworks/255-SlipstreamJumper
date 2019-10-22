@@ -15,11 +15,27 @@ namespace Pattison {
             level = ""
         };
 
+        public AABB a;
+        public AABB b;
+
         void Start() {
 
         }
 
         void Update() {
+
+            if (a.CollidesWith(b)) {
+                a.GetComponent<MeshRenderer>().material.color = Color.red;
+                b.GetComponent<MeshRenderer>().material.color = Color.red;
+
+                Vector3 fix = a.FindFix(b);
+                a.ApplyFix(fix);
+
+            } else {
+                a.GetComponent<MeshRenderer>().material.color = Color.white;
+                b.GetComponent<MeshRenderer>().material.color = Color.white;
+            }
+
 
         }
     }
