@@ -11,9 +11,31 @@ namespace Myles {
             level = "MylesScene"
         };
 
-        void Start() { }
 
-        void Update() { }
+        public AABB a;
+
+        public AABB b;
+
+        void Start()
+        {
+
+        }
+
+        void Update() {
+            if (a.CollidesWith(b))
+            {
+                a.GetComponent <MeshRenderer>().materialcolor = Color.red;
+                b.GetComponent <MeshRenderer>().materialcolor = Color.red;
+
+                Vector3 fix = a.FindFix(b);
+                a.ApplyFix(fix);
+
+            } else
+            {
+                a.GetComponent<MeshRenderer>().materialcolor = Color.white;
+                b.GetComponent<MeshRenderer>().materialcolor = Color.white;
+            }
+        }
 
 
     }
