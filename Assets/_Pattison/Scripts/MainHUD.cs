@@ -19,11 +19,12 @@ namespace Pattison {
         void Start() {
 
         }
-        public void UpdateTimer(float p) {
-            imageOfTimer.fillAmount = p;
-        }
+
         void Update() {
-            buttonText.text = Game.main.isPaused ? "Play" : "Pause";
+            if (Game.main) {
+                buttonText.text = Game.main.isPaused ? "Play" : "Pause";
+                imageOfTimer.fillAmount = Game.main.timerUntilWarp / Game.main.timePerZone;
+            }
             AnimateBackground();
         }
         public void SetLevelDetails(ZoneInfo info) {

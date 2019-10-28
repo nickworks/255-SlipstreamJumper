@@ -11,41 +11,41 @@ public class Game : MonoBehaviour {
     float prePauseTimescale = 1;
 
     public float timePerZone = 30;
-    float timerUntilWarp;
-    List<ZoneInfo> zones = new List<ZoneInfo>();
+    public float timerUntilWarp { get; private set; }
+    private static List<ZoneInfo> _zones = new List<ZoneInfo>() {
+        Andrea.Zone.info,
+        Breu.Zone.info,
+        Caughman.Zone.info,
+        Jennings.Zone.info,
+        Myles.Zone.info,
+        Petzak.Zone.info,
+        Powers.Zone.info,
+        Smith.Zone.info,
+        Stralle.Zone.info,
+        Takens.Zone.info,
+        Wynalda.Zone.info
+    };
+    public static List<ZoneInfo> zones { get { return _zones; } }
     List<ZoneInfo> zonesUnplayed = new List<ZoneInfo>();
+    public ZoneInfo currentZone { get; private set; }
 
-    Pattison.MainHUD hud;
-
-    void Start() {
-
+    void Awake() {
         if (main != null) {
             Destroy(gameObject);
             return;
         }
         DontDestroyOnLoad(gameObject);
         main = this;
-        hud = GetComponent<Pattison.MainHUD>();
-
-        zones.Add(Andrea.Zone.info);
-        zones.Add(Breu.Zone.info);
-        zones.Add(Caughman.Zone.info);
-        zones.Add(Jennings.Zone.info);
-        zones.Add(Myles.Zone.info);
-        zones.Add(Petzak.Zone.info);
-        zones.Add(Powers.Zone.info);
-        zones.Add(Smith.Zone.info);
-        zones.Add(Stralle.Zone.info);
-        zones.Add(Takens.Zone.info);
-        zones.Add(Wynalda.Zone.info);
-
+    }
+    void Start() {
+        
     }
     void Update() {
         if (Input.GetButtonDown("Pause")) TogglePause();
         if (isPaused) return;
 
         timerUntilWarp -= Time.unscaledDeltaTime;
-        hud.UpdateTimer(timerUntilWarp / timePerZone);
+        
         if (timerUntilWarp < 0) Warp();
     }
     public void Warp() {
@@ -58,7 +58,7 @@ public class Game : MonoBehaviour {
     }
     public void Play(ZoneInfo zone) {
         SceneManager.LoadScene(zone.level, LoadSceneMode.Single);
-        hud.SetLevelDetails(zone);
+        currentZone = zone;
     }
     public void TogglePause() {
         isPaused = !isPaused;
