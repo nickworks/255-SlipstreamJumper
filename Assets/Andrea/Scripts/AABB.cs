@@ -16,36 +16,41 @@ namespace Andrea
 
         }
 
-
         void Update()
         {
             Recalc();
         }
+
+
+        //void LateUpdate()
+        //{
+            //Recalc();
+        //}
 
         public bool CollidesWith(AABB other)
         {
             // check for gap to the left:
             if (other.Max.x < this.Min.x)
             {
-                return false; // no collision:
+                return false; // no collision
             }
 
             // check for gap to the right
             if (other.Min.x > this.Max.x)
             {
-                return false; // no collision:
+                return false; // no collision
             }
 
             // check for gap above
             if (other.Min.y > this.Max.y)
             {
-                return false; // no collision:
+                return false; // no collision
             }
 
             // check for gap below
             if (other.Max.y < this.Min.y)
             {
-                return false; // no collision:
+                return false; // no collision
             }
 
             // if no gaps are found, return true:
@@ -83,9 +88,14 @@ namespace Andrea
             return fix;
         }
 
-        void Recalc()
+        public void Recalc()
         {
             Vector3 halfSize = size / 2;
+
+            halfSize.x *= transform.localScale.x;
+            halfSize.y *= transform.localScale.y;
+            halfSize.z *= transform.localScale.z;
+
             Min = transform.position - halfSize;
             Max = transform.position + halfSize;
 
@@ -93,12 +103,18 @@ namespace Andrea
 
         void OnDrawGizmos()
         {
-            Gizmos.DrawWireCube(transform.position, size);
+            Vector3 scaledSize = size;
+            scaledSize.x *= transform.localScale.x;
+            scaledSize.y *= transform.localScale.y;
+            scaledSize.z *= transform.localScale.z;
+
+            Gizmos.DrawWireCube(transform.position, scaledSize);
         }
         
         public void ApplyFix(Vector3 fix)
         {
             transform.position += fix;
+            Recalc();
         }
     }
 }

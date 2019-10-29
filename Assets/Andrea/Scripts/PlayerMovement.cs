@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Andrea
 {
+    [RequireComponent(typeof(AABB))]
     public class PlayerMovement : MonoBehaviour
     {
         /// <summary>
@@ -22,7 +23,7 @@ namespace Andrea
         public float gravity = 25;
 
         /// <summary>
-        /// Whether or no the player is currently standing on the ground.
+        /// Whether or not the player is currently standing on the ground.
         /// </summary>
         bool isGrounded = false;
 
@@ -38,7 +39,7 @@ namespace Andrea
 
         void Start()
         {
-
+            
         }
         void Update()
         {
@@ -48,7 +49,8 @@ namespace Andrea
             // add velocity to position
             transform.position += velocity * Time.deltaTime;
 
-            ClampToGroundPlane();
+            //ClampToGroundPlane();
+            isGrounded = false;
         }
 
         private void ClampToGroundPlane()
@@ -100,6 +102,26 @@ namespace Andrea
             //add acceleration due to gravity
             float gravityMultiplier = (isJumping) ? 0.5f : 1f;
             velocity.y -= gravity * Time.deltaTime * gravityMultiplier;
+        }
+
+        public void ApplyFix(Vector3 fix)
+        {
+            if (fix.x != 0)
+            {
+                velocity.x = 0;
+            }
+            if (fix.y > 0 && velocity.y < 0)
+            {
+                velocity.y = 0;
+            }
+            if (fix.y < 0 && velocity.y > 0)
+            {
+                velocity.y = 0;
+            }
+            if (fix.y > 0) 
+            {
+                isGrounded = true;
+            }
         }
 
     }
