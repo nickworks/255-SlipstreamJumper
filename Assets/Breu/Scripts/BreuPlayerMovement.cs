@@ -4,9 +4,10 @@ using UnityEngine;
 
 namespace Breu
 {
+    [RequireComponent(typeof(BreuAABB))]
     public class BreuPlayerMovement : MonoBehaviour
     {
-
+        //Time.timeScale allows you to mess with how fast/slow time.deltatime is
 
         /// <summary>
         /// determines player horizontal (x) speed
@@ -56,7 +57,8 @@ namespace Breu
             //add velocity to position
             transform.position += PlayerVelocity * Time.deltaTime;
 
-            ClampToGroundPlane();
+            //ClampToGroundPlane();
+            isGrounded = false;
 
         }
 
@@ -111,6 +113,20 @@ namespace Breu
             }
         }
 
-
+        public void applyFix(Vector3 fix)
+        {
+            if(fix.x != 0)
+            {
+                PlayerVelocity.x = 0;
+            }
+            if (fix.y != 0 && PlayerVelocity.y < 0)
+            {
+                PlayerVelocity.y = 0;
+            }
+            if (fix.y > 0)
+            {
+                isGrounded = true;
+            }
+        }
     }
 }

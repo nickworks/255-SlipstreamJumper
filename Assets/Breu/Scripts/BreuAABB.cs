@@ -20,7 +20,7 @@ namespace Breu
 
         }
 
-        // Update is called once per frame
+        // Update is called once per framea
         void Update()
         {
             recalc();
@@ -84,23 +84,37 @@ namespace Breu
             return fix;
         }
 
-
-        void recalc()
+        /// <summary>
+        /// 
+        /// </summary>
+        public void recalc()
         {
             Vector3 halfSize = size / 2;
+
+            halfSize.x *= transform.localScale.x;
+            halfSize.y *= transform.localScale.y;
+            halfSize.z *= transform.localScale.z;
+
             Min = transform.position - halfSize;
             Max = transform.position + halfSize;
         }
 
         void OnDrawGizmos()
         {
-            Gizmos.DrawWireCube(transform.position, size);
+            Vector3 scaledSize = size;
+
+            scaledSize.x *= transform.localScale.x;
+            scaledSize.y *= transform.localScale.y;
+            scaledSize.z *= transform.localScale.z;
+
+            Gizmos.DrawWireCube(transform.position, scaledSize);
         }
 
         public void applyFix(Vector3 fix)
-        {
+        {            
             transform.position += fix;
 
+            recalc();
         }
     }
 }
