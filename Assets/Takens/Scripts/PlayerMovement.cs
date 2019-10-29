@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 namespace Takens
 {
+    [RequireComponent(typeof(AABB))]
     public class PlayerMovement : MonoBehaviour
     {
         /// <summary>
@@ -47,7 +48,10 @@ namespace Takens
             DoPhysicsHortizontal();
             //add players velocity to the players position
             transform.position += velocity * Time.deltaTime;
-            ClampToGroundPlane();
+
+
+            //ClampToGroundPlane();
+            isGrounded = false;
         }
 
         private void ClampToGroundPlane()
@@ -95,7 +99,13 @@ namespace Takens
             velocity.y -= gravity * gravityMultiplier * Time.deltaTime;
         }
 
-
+        public void ApplyFix(Vector3 fix)
+        {
+            if (fix.x != 0) velocity.x = 0;
+            if (fix.y > 0 && velocity.y < 0) velocity.y = 0;
+            if (fix.y < 0 && velocity.y > 0) velocity.y = 0;
+            if (fix.y > 0) isGrounded = true;
+        }
 
     }
 }

@@ -7,7 +7,7 @@ namespace Takens
     {
 
         public Vector3 size;
-
+        public bool manual = false;
 
         public Vector3 min { get; private set; }
         public Vector3 max { get; private set; }
@@ -72,9 +72,17 @@ namespace Takens
             return fix;
         }
 
-        void Recalc()
+        public void Recalc()
         {
             Vector3 halfSize = size / 2;
+
+            if (!manual)
+            {
+                halfSize.x *= transform.localScale.x;
+                halfSize.y *= transform.localScale.y;
+                halfSize.z *= transform.localScale.z;
+            }
+
             min = transform.position - halfSize;
             max = transform.position + halfSize;
         }
@@ -82,12 +90,24 @@ namespace Takens
         public void ApplyFix(Vector3 fix)
         {
             transform.position += fix;
-
+            Recalc();
         }
 
         void OnDrawGizmos()
         {
-            Gizmos.DrawWireCube(transform.position, size);
+
+            if (!manual)
+            {
+                Vector3 scaledSize = size;
+                scaledSize.x *= transform.localScale.x;
+                scaledSize.y *= transform.localScale.y;
+                scaledSize.z *= transform.localScale.z;
+                Gizmos.DrawWireCube(transform.position, scaledSize);
+            }
+            else
+            {
+                Gizmos.DrawWireCube(transform.position, size);
+            }
         }
     }
 }
