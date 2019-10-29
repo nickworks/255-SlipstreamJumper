@@ -18,7 +18,7 @@ namespace Myles
         }
 
 
-        void LateUpdate()
+        void Update()
         {
             Recalc();
         }
@@ -72,9 +72,13 @@ namespace Myles
         }
 
 
-        void Recalc()
+        public void Recalc()
         {
             Vector3 halfSize = size / 2;
+
+            halfSize.x *= transform.localScale.x;
+            halfSize.y *= transform.localScale.y;
+            halfSize.z *= transform.localScale.z;
 
             min = transform.position - halfSize;
             max = transform.position + halfSize;
@@ -84,12 +88,19 @@ namespace Myles
         public void ApplyFix(Vector3 fix)
         {
             transform.position += fix;
+            Recalc();
 
         }
 
         void OnDrawGizmos()
         {
-            Gizmos.DrawWireCube(transform.position, size);
+            Vector3 scaledSize = size;
+
+            scaledSize.x *= transform.localScale.x;
+            scaledSize.y *= transform.localScale.y;
+            scaledSize.z *= transform.localScale.z;
+
+            Gizmos.DrawWireCube(transform.position, scaledSize);
         }
     }
 }

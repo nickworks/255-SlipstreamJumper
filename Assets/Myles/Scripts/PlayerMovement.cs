@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace Myles {
+    [RequireComponent(typeof(AABB))]
     public class PlayerMovement : MonoBehaviour
     {
         /// <summary>
@@ -40,7 +41,7 @@ namespace Myles {
         
         void Start()
         {
-
+            //Time.timeScale = 0.5f;
         }
 
 
@@ -48,7 +49,12 @@ namespace Myles {
         {
             DoPhysicsVertical();
             DoPhysicsHorizontal();
-            ClampToGroundPlane();
+
+            //add velocity to position:
+            transform.position += velocity * Time.deltaTime;
+
+            //ClampToGroundPlane();
+            isGrounded = false;
 
         }
 
@@ -103,7 +109,12 @@ namespace Myles {
         }
 
 
-        
+        public void ApplyFix(Vector3 fix)
+        {
+            if (fix.x != 0) velocity.x = 0;
+            if (fix.y != 0) velocity.y = 0;
+            if (fix.y > 0) isGrounded = true;
+        }
 
     }
 }
