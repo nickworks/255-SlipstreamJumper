@@ -21,7 +21,9 @@ public class MenuBuilder : MonoBehaviour {
     public int gutterWidth = 5;
 
     void Start() {
-        if (eventSystem == null) eventSystem = GetComponentInChildren<EventSystem>();
+        if (eventSystem == null)
+            //eventSystem = GetComponentInChildren<EventSystem>();
+            eventSystem = GameObject.FindObjectOfType<EventSystem>();
         BuildMenu(Game.zones);
     }
     void BuildMenu(List<ZoneInfo> zones) {
@@ -33,7 +35,9 @@ public class MenuBuilder : MonoBehaviour {
         buttonToFocusOn = null;
 
         MakeColumns();
-        MakeButton("Back", () => { });
+        MakeButton("Back", () => {
+            GetComponentInParent<MainMenu>().BttnHideWarpMenu();
+        });
         NoMoreButtonsThisRow();
 
         foreach (ZoneInfo zone in zones) {
@@ -84,7 +88,7 @@ public class MenuBuilder : MonoBehaviour {
     }
 
     void Update() {
-        if(isInFocus) Focus();
+        Focus();
     }
     void Focus() {
         if (eventSystem == null) return;

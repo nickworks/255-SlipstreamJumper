@@ -20,8 +20,15 @@ public class SimpleButton : MonoBehaviour {
             callback();
         }
     }
+    private void OnMouseOver() {
+        print("?");
+    }
+    private void OnMouseEnter() {
+        print("??");
+    }
     private void OnPointerEnter(PointerEventData eventData) {
         Button bttn = GetComponent<Button>();
+        print("???");
         if (bttn != null) bttn.Select();
     }
 }
