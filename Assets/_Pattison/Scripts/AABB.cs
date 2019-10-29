@@ -16,7 +16,7 @@ namespace Pattison
 
         }
 
-        void LateUpdate() {
+        void Update() {
             Recalc();
         }
 
@@ -24,11 +24,11 @@ namespace Pattison
 
             // check for gap to left:
             if (other.max.x < this.min.x) return false; // no collision!
-                                                        // check for gap to right:
+            // check for gap to right:
             if (other.min.x > this.max.x) return false; // no collision!
-                                                        // check for gap above:
+            // check for gap above:
             if (other.min.y > this.max.y) return false; // no collision!
-                                                        // check for gap below:
+            // check for gap below:
             if (other.max.y < this.min.y) return false; // no collision!
 
             // no gaps found, return true:
@@ -62,9 +62,12 @@ namespace Pattison
             return fix;
         }
 
-
-        void Recalc() {
+        public void Recalc() {
             Vector3 halfSize = size / 2;
+
+            halfSize.x *= transform.localScale.x;
+            halfSize.y *= transform.localScale.y;
+            halfSize.z *= transform.localScale.z;
 
             min = transform.position - halfSize;
             max = transform.position + halfSize;
@@ -72,11 +75,18 @@ namespace Pattison
         }
         public void ApplyFix(Vector3 fix) {
             transform.position += fix;
-
+            Recalc();
         }
 
         void OnDrawGizmos() {
-            Gizmos.DrawWireCube(transform.position, size);
+
+            Vector3 scaledSize = size;
+
+            scaledSize.x *= transform.localScale.x;
+            scaledSize.y *= transform.localScale.y;
+            scaledSize.z *= transform.localScale.z;
+
+            Gizmos.DrawWireCube(transform.position, scaledSize);
         }
     }
 }

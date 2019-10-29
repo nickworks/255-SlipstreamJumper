@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Pattison
 {
+    [RequireComponent(typeof(AABB))]
     public class PlayerMovement : MonoBehaviour
     {
         /// <summary>
@@ -37,7 +38,7 @@ namespace Pattison
         Vector3 velocity = new Vector3();
 
         void Start() {
-
+            //Time.timeScale = 0.5f;
         }
 
         void Update() {
@@ -47,8 +48,8 @@ namespace Pattison
             // add velocity to position:
             transform.position += velocity * Time.deltaTime;
 
-            ClampToGroundPlane();
-
+            //ClampToGroundPlane();
+            isGrounded = false;
         }
 
         private void ClampToGroundPlane() {
@@ -85,6 +86,12 @@ namespace Pattison
             // add acceleration to our velocity:
             float gravityMultiplier = (isJumping) ? 0.5f : 1;
             velocity.y -= gravity * Time.deltaTime * gravityMultiplier;
+        }
+
+        public void ApplyFix(Vector3 fix) {
+            if (fix.x != 0) velocity.x = 0;
+            if (fix.y != 0) velocity.y = 0;
+            if (fix.y > 0) isGrounded = true;
         }
 
     }
