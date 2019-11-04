@@ -41,7 +41,11 @@ public class MenuBuilder : MonoBehaviour {
         NoMoreButtonsThisRow();
 
         foreach (ZoneInfo zone in zones) {
-            MakeButton(zone.zoneName, ()=> { print($"load: {zone.level}"); });
+            MakeButton(zone.zoneName, ()=> {
+
+                Game.Play(zone);
+
+            });
         }
     }
     void NoMoreButtonsThisRow() {

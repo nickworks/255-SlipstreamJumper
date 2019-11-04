@@ -413,7 +413,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1093762725, guid: 548d14c8288ce714ca79593e1827f666, type: 3}
       propertyPath: timePerZone
-      value: 30
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 548d14c8288ce714ca79593e1827f666, type: 3}

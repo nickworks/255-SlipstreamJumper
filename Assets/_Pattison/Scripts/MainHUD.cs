@@ -19,7 +19,6 @@ namespace Pattison {
         void Start() {
 
         }
-
         void Update() {
             if (Game.main) {
                 buttonText.text = Game.main.isPaused ? "Play" : "Pause";
