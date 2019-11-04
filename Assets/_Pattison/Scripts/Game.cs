@@ -93,8 +93,21 @@ public class Game : MonoBehaviour {
         zonesUnplayed.RemoveAt(index);
         
     }
+    public void Skip() {
+        WarpRandom();
+        SetPause(false);
+    }
     public void TogglePause() {
-        isPaused = !isPaused;
+        SetPause(null);
+    }
+    private void SetPause(bool? setTo = null) {
+
+        bool pauseValue = !isPaused;
+        if (setTo != null) {
+            if (setTo == true) pauseValue = true;
+            if (setTo == false) pauseValue = false;
+        }
+        isPaused = pauseValue;
         if (isPaused) prePauseTimescale = Time.timeScale;
         Time.timeScale = isPaused ? 0 : prePauseTimescale;
     }
