@@ -104,6 +104,8 @@ namespace Caughman
             veloctiy.y -= gravity * Time.deltaTime;
         }//End DoPhysicsVertical
 
+
+
     }//End Class
 
 }//End Namespace
