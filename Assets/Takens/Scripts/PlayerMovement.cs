@@ -14,12 +14,12 @@ namespace Takens
         /// <summary>
         /// The acceleration due to gravity in meters per second square.
         /// </summary>
-        public float gravity = 10f;
+        public float gravity = 12f;
 
         /// <summary>
         /// The ammount of force used when jumping
         /// </summary>
-        public float jumpImpulse = 5f;
+        public float jumpImpulse = 10f;
 
         /// <summary>
         /// Wether or not the player is currently standing on the ground.
@@ -34,7 +34,8 @@ namespace Takens
         /// <summary>
         /// The current velocity of the player, measured in meters per second.
         /// </summary>
-        Vector3 velocity = new Vector3();
+        [HideInInspector]
+        public Vector3 velocity = new Vector3();
 
         void Start()
         {
@@ -104,7 +105,11 @@ namespace Takens
             if (fix.x != 0) velocity.x = 0;
             if (fix.y > 0 && velocity.y < 0) velocity.y = 0;
             if (fix.y < 0 && velocity.y > 0) velocity.y = 0;
-            if (fix.y > 0) isGrounded = true;
+            if (fix.y > 0)
+            {
+                isGrounded = true;
+                transform.position += 2 * Vector3.down * Time.deltaTime;
+            }
         }
 
     }
