@@ -7,9 +7,9 @@ namespace Wynalda
     public class Zone : Pattison.Zone {
 
         new static public ZoneInfo info = new ZoneInfo() {
-            zoneName = "The Water Temple",
-            creator = "Takens",
-            level = "TakensScene"
+            zoneName = "40 Yard Dash",
+            creator = "Wynalda",
+            level = "WynaldaScene"
         };
 
 
@@ -111,6 +111,7 @@ namespace Wynalda
                     //collision!!!
                     Vector3 fix = player.FindFix(platform);
                     player.BroadcastMessage("ApplyFix", fix);
+                    //print("Hi");
                 }
 
             }
