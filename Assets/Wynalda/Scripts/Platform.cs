@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-namespace Wynalda
+namespace Takens
 {
 
     [RequireComponent(typeof(AABB))]
