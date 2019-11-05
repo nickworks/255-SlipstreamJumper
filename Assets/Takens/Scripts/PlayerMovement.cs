@@ -112,5 +112,10 @@ namespace Takens
             }
         }
 
+        public void LaunchUpwards()
+        {
+            velocity.y = 20f;
+        }
+
     }
 }

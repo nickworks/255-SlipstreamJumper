@@ -132,6 +132,7 @@ GameObject:
   - component: {fileID: 615584244}
   - component: {fileID: 615584243}
   - component: {fileID: 615584246}
+  - component: {fileID: 615584247}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -217,10 +218,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 2054755372}
-  prefabPlatform: {fileID: 7479156771931014953, guid: 0e94c5f6458d1844baf9eac2f4cf8300,
-    type: 3}
+  PM: {fileID: 0}
+  prefabChunks:
+  - {fileID: 725836681903111410, guid: f647cd0e996750f4a83b3c9f04c5fee1, type: 3}
   gapSizeMin: 1.5
   gapSizeMax: 2.5
+--- !u!114 &615584247
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 615584242}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a420698f69d43cc428d4fa035de9c3d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 2054755371}
 --- !u!1 &1486476383
 GameObject:
   m_ObjectHideFlags: 0
@@ -348,6 +363,7 @@ MonoBehaviour:
   speed: 5
   gravity: 25
   jumpImpulse: 11
+  velocity: {x: 0, y: 0, z: 0}
 --- !u!65 &2054755368
 BoxCollider:
   m_ObjectHideFlags: 0
