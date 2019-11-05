@@ -9,7 +9,7 @@ namespace Wynalda
         /// <summary>
         ///How fast to move all moveLeft objects to the left (meters-per-second)
         /// </summary>
-        public static float speed = 5f;
+        public static float speed = 7f;
 
         // Start is called before the first frame update
         void Start()

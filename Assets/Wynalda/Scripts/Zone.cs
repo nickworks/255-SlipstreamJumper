@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Wynalda {
+namespace Wynalda
+{
     public class Zone : Pattison.Zone {
 
         new static public ZoneInfo info = new ZoneInfo() {
-            zoneName = "The Water Temple",
-            creator = "Takens",
-            level = "TakensScene"
+            zoneName = "40 Yard Dash",
+            creator = "Wynalda",
+            level = "WynaldaScene"
         };
 
 
@@ -22,12 +23,16 @@ namespace Wynalda {
 
         Camera camera;
 
+        public Texture[] textures;
+        public Texture startingTexture;
+
         void Awake()
         {
             camera = GetComponent<Camera>();
         }
 
         void Start() {
+            SpawnPlatform(true);
             
         }
 
@@ -76,12 +81,18 @@ namespace Wynalda {
          //   return limitX;
         }
 
-        private void SpawnPlatform()
+        private void SpawnPlatform(bool isStartingPlatform = false)
         {
             //spawn new platforms:
 
             float gapSize = Random.Range(gapSizeMin,gapSizeMax);
-            float nextPlatformWidth = 10;
+            float nextPlatformWidth = Random.Range(3, 7);
+            float nextPlatformHeight = Random.Range(5, 10);
+
+            if (isStartingPlatform)
+            {
+                nextPlatformWidth = 50;
+            }
 
             Vector3 pos = new Vector3();
 
@@ -89,10 +100,34 @@ namespace Wynalda {
             {
                 AABB lastPlatform = platforms[platforms.Count - 1];
                 pos.x = lastPlatform.max.x + gapSize + nextPlatformWidth/2;
+                pos.y = -5;
+            }
+
+            if (isStartingPlatform)
+            {
+                pos.y += -2;
+                nextPlatformHeight = 10;
             }
 
             GameObject newPlatform = Instantiate(prefabPlatform, pos, Quaternion.identity);
-            newPlatform.transform.localScale = new Vector3(nextPlatformWidth, 1, 1);
+            newPlatform.transform.localScale = new Vector3(nextPlatformWidth, nextPlatformHeight, 1);
+
+
+            MeshRenderer mesh = newPlatform.GetComponent<MeshRenderer>();
+            if(mesh)
+            {
+                if (isStartingPlatform)
+                {
+                    mesh.material.SetTexture("_MainTex", startingTexture);
+                }
+                else
+                {
+                    int index = Random.Range(0, textures.Length);
+                    mesh.material.SetTexture("_MainTex", textures[index]);
+                }
+
+             
+            }
 
             AABB aabb = newPlatform.GetComponent<AABB>();
             if (aabb)
@@ -110,6 +145,7 @@ namespace Wynalda {
                     //collision!!!
                     Vector3 fix = player.FindFix(platform);
                     player.BroadcastMessage("ApplyFix", fix);
+                    //print("Hi");
                 }
 
             }
