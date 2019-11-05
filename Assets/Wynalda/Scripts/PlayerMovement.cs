@@ -1,43 +1,41 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 namespace Wynalda
 {
+    [RequireComponent(typeof(AABB))]
     public class PlayerMovement : MonoBehaviour
     {
         /// <summary>
-        /// The speec multiplier for horizontal movement.
+        /// Speed multiplier for horizontal movement.
         /// </summary>
-        public float speed = 5;
+        public float speed = 5f;
 
         /// <summary>
-        /// The aceceleration due to gravity.
+        /// The acceleration due to gravity in meters per second square.
         /// </summary>
-        public float gravity = 20;
+        public float gravity = 10f;
 
         /// <summary>
-        /// The amount of force to use when jumping.
+        /// The ammount of force used when jumping
         /// </summary>
-        public float jumpImpulse = 8;
+        public float jumpImpulse = 5f;
 
         /// <summary>
-        /// Whether or not the player is currently standing on the ground.
+        /// Wether or not the player is currently standing on the ground.
         /// </summary>
         bool isGrounded = false;
 
         /// <summary>
-        /// Whether or not the player is moving upwards on a jump arc (and holding the jump button).
+        /// Wether or not the player is moving upwards on a jump arc (and holding the jump button)
         /// </summary>
         bool isJumping = false;
 
         /// <summary>
-        /// The current velocity of the player, measured in meters / second. 
+        /// The current velocity of the player, measured in meters per second.
         /// </summary>
         Vector3 velocity = new Vector3();
 
-
-        // Start is called before the first frame update
         void Start()
         {
 
@@ -46,49 +44,23 @@ namespace Wynalda
         // Update is called once per frame
         void Update()
         {
-
-
-            DoPhysicsHorizontal();
             DoPhysicsVertical();
-            ClampToGround();
-
-        }// end update
-
-        private void DoPhysicsVertical()
-        {
-            if (Input.GetButtonDown("Jump") && isGrounded) // jump was just pressed
-            {
-                velocity.y = jumpImpulse;
-                isJumping = true;
-            }
-            if (!Input.GetButton("Jump"))
-            {
-                isJumping = false;
-            }
-            if (velocity.y < 0)
-            {
-                isJumping = false;
-            }
-
-            //add acceleration to our velocity
-            float gravityMultiplier = (isJumping) ? 0.5f : 1;
-            velocity.y -= gravity * Time.deltaTime * gravityMultiplier;
-            //add players velocity to players position
+            DoPhysicsHortizontal();
+            //add players velocity to the players position
             transform.position += velocity * Time.deltaTime;
+
+
+            //ClampToGroundPlane();
+            isGrounded = false;
         }
 
-        private void DoPhysicsHorizontal()
+        private void ClampToGroundPlane()
         {
-            float h = Input.GetAxis("Horizontal");
-            velocity.x = h * speed;
-        }
 
-        private void ClampToGround()
-        {
-            //clamp to ground plane: (y = 0)
-            if (transform.position.y < 0)//below the ground
-            {
-                //transform.position = new Vector3(transform.position.x, 0, 0); 
+            //clamp to ground play: (y=0)
+            if (transform.position.y < 0)
+            {//player is below the ground:
+             //transform.position = new Vector3(transform.position.x, 0, transform.position.z);
                 Vector3 pos = transform.position;
                 pos.y = 0;
                 transform.position = pos;
@@ -102,10 +74,38 @@ namespace Wynalda
             }
         }
 
-        public void ApplyFix(Vector3 fix)
+        private void DoPhysicsHortizontal()
         {
-            transform.position += fix;
+            float h = Input.GetAxis("Horizontal");
+            velocity.x = h * speed;
         }
 
-    } // end class
+        private void DoPhysicsVertical()
+        {
+            if (Input.GetButtonDown("Jump") && isGrounded)
+            {
+                velocity.y = jumpImpulse;
+                isJumping = true;
+            }
+            //if not holding jump, cancel jump
+            if (!Input.GetButton("Jump"))
+            {
+                isJumping = false;
+            }
+            //if past jump peak, cancel jump
+            if (velocity.y < 0) isJumping = false;
+            //add acceleration to our gravity
+            float gravityMultiplier = (isJumping) ? 0.5f : 1;
+            velocity.y -= gravity * gravityMultiplier * Time.deltaTime;
+        }
+
+        public void ApplyFix(Vector3 fix)
+        {
+            if (fix.x != 0) velocity.x = 0;
+            if (fix.y > 0 && velocity.y < 0) velocity.y = 0;
+            if (fix.y < 0 && velocity.y > 0) velocity.y = 0;
+            if (fix.y > 0) isGrounded = true;
+        }
+
+    }
 }
