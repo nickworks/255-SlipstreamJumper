@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Takens {
+namespace Wynalda
+{
     public class Zone : Pattison.Zone {
 
         new static public ZoneInfo info = new ZoneInfo() {
