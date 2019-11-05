@@ -25,6 +25,16 @@ namespace Breu
         public float Gravity = 30;
 
         /// <summary>
+        /// determines acceleration due to groundpound
+        /// </summary>
+        public float groundPoundSpeed = 100;
+
+        /// <summary>
+        /// determines if player is groundpounding
+        /// </summary>
+        bool isGroundPounding = false;
+
+        /// <summary>
         /// determines if the player is standing on the "ground"
         /// </summary>
         private bool isGrounded = false;
@@ -70,7 +80,29 @@ namespace Breu
 
         private void DoPhysicsVertical()
         {
-            if (Input.GetButtonDown("Jump") && isGrounded == true)//jump button pressed
+            //if player presses groundpound button player "groundpounds" until they hit ground
+            if (Input.GetButtonDown("Fire3") && isGrounded == false)
+            {
+                isGroundPounding = true;
+            }
+            else if (isGrounded == true)
+            {
+                isGroundPounding = false;
+            }
+            //add acceleration for groundpound
+            float groundPoundMult = 1;
+            //groundpound button pressed
+            if (isGroundPounding == true)
+            {
+                groundPoundMult = groundPoundSpeed;
+            }
+            else
+            {
+                groundPoundMult = 1;
+            }
+
+            //jump button pressed
+            if (Input.GetButtonDown("Jump") && isGrounded == true)
             {
                 PlayerVelocity.y = jumpImpulse;
                 isJumping = true;
@@ -91,7 +123,10 @@ namespace Breu
             {
                 gravMultiplyer = 0.5f;
             }
-            PlayerVelocity.y -= Gravity * Time.deltaTime * gravMultiplyer;
+            
+            PlayerVelocity.y -= Gravity * Time.deltaTime * gravMultiplyer * groundPoundMult;
+
+            
         }
 
         private void ClampToGroundPlane()
