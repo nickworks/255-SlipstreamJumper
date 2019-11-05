@@ -132,6 +132,7 @@ GameObject:
   - component: {fileID: 615584244}
   - component: {fileID: 615584243}
   - component: {fileID: 615584247}
+  - component: {fileID: 615584246}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -204,6 +205,20 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &615584246
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 615584242}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a43af3de93394143834fcbc7711483e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 1868104144}
+  easing: 0.05
 --- !u!114 &615584247
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -217,8 +232,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 1868104140}
-  prefabPlatform: {fileID: 7479156771931014953, guid: 0e94c5f6458d1844baf9eac2f4cf8300,
-    type: 3}
+  prefabChunks:
+  - {fileID: 4372010935928397074, guid: f0672f092f1bfbb47a33735b16b0e6ce, type: 3}
   gapSizeMin: 2
   gapSizeMax: 10
   textures:
@@ -417,7 +432,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1868104139}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.96, y: 15.27, z: 0}
+  m_LocalPosition: {x: 4.84, y: 6.72, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}

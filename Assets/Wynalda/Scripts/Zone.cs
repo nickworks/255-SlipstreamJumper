@@ -12,53 +12,79 @@ namespace Wynalda
             level = "WynaldaScene"
         };
 
-
+        //Player!
         public AABB player;
-        List<AABB> platforms = new List<AABB>();
-
-        public GameObject prefabPlatform;
-
+        /// <summary>
+        /// The current chunks in our scene
+        /// </summary>
+        List<Chunk> chunks = new List<Chunk>();
+        /// <summary>
+        /// The AABBs of all platforms in our scene
+        /// </summary>
+        static public List<AABB> platforms = new List<AABB>();
+        /// <summary>
+        /// the AABBs of all springs in our scene
+        /// </summary>
+        static public List<AABB> springs = new List<AABB>();
+        /// <summary>
+        /// The chunks we are allowed to spawn
+        /// </summary>
+        public Chunk[] prefabChunks;
+        
+        //minimum amount of space between platforms
         public float gapSizeMin = 2;
+        //minimum amount of space between platforms
         public float gapSizeMax = 10;
 
-        Camera camera;
+        Camera cam;
 
         public Texture[] textures;
         public Texture startingTexture;
 
         void Awake()
         {
-            camera = GetComponent<Camera>();
+            cam = GetComponent<Camera>();
         }
 
         void Start() {
-            SpawnPlatform(true);
+            SpawnChunk(true);
             
         }
 
         void Update()
         {
-            if (platforms.Count < 5)
+            if (chunks.Count < 2)
             {
-                SpawnPlatform();
+                SpawnChunk();
             }
 
-            RemoveOffscreenPlatforms();
+            RemoveOffScreenChunks();
         }
 
-        private void RemoveOffscreenPlatforms()
+        private void RemoveOffScreenChunks()
         {
             float limitX = FindScreenLeftX();
-            //limitX = FindScreenLeftX();
 
-            for (int i = platforms.Count - 1; i >= 0; i--)
+            for (int i = chunks.Count - 1; i >= 0; i--)
             {
-                if (platforms[i].max.x < limitX)
+                if (chunks[i].rightEdge.position.x < limitX)
                 {
-                    AABB platform = platforms[i];
+                    Chunk chunk = chunks[i];
 
-                    platforms.RemoveAt(i);
-                    Destroy(platform.gameObject);
+                    Platform[] deadPlatforms = chunk.GetComponentsInChildren<Platform>();
+                    foreach(Platform platform in deadPlatforms)
+                    {
+                        platforms.Remove(platform.GetComponent<AABB>());
+                    }
+                    Spring[] deadSprings = chunk.GetComponentsInChildren<Spring>();
+                    foreach (Spring spring in deadSprings)
+                    {
+                        springs.Remove(spring.GetComponent<AABB>());
+                    }
+
+
+                    chunks.RemoveAt(i);
+                    Destroy(chunk.gameObject);
                 }
             }
         }
@@ -66,7 +92,7 @@ namespace Wynalda
         private float FindScreenLeftX()
         {
             Plane xy = new Plane(Vector3.forward, Vector3.zero);
-            Ray ray = camera.ScreenPointToRay(new Vector3(0, Screen.height / 2));
+            Ray ray = cam.ScreenPointToRay(new Vector3(0, Screen.height / 2));
 
             //  Debug.DrawRay(ray.origin,ray.direction * 10, Color.yellow);
 
@@ -81,75 +107,89 @@ namespace Wynalda
          //   return limitX;
         }
 
-        private void SpawnPlatform(bool isStartingPlatform = false)
+        private void SpawnChunk(bool isStartingPlatform = false)
         {
-            //spawn new platforms:
+            //spawn new chunk:
 
             float gapSize = Random.Range(gapSizeMin,gapSizeMax);
-            float nextPlatformWidth = Random.Range(3, 7);
-            float nextPlatformHeight = Random.Range(5, 10);
 
-            if (isStartingPlatform)
+
+           // if (isStartingPlatform)
+           // {
+           //     nextPlatformWidth = 50;
+           // }
+
+            Vector3 pos = new Vector3(0, -3 , 0);
+
+            if (chunks.Count > 0)
             {
-                nextPlatformWidth = 50;
+
+                pos.x = chunks[chunks.Count - 1].rightEdge.position.x + gapSize;
+                pos.y = chunks[chunks.Count - 1].rightEdge.position.y;
+                //  pos.y = -5;
             }
 
-            Vector3 pos = new Vector3();
+            //  if (isStartingPlatform)
+            //  {
+            //     pos.y += -2;
+            //     nextPlatformHeight = 10;
+            //   }
 
-            if (platforms.Count > 0)
+            int index = Random.Range(0, prefabChunks.Length);
+
+            Chunk chunk = Instantiate(prefabChunks[index], pos, Quaternion.identity);
+            chunks.Add(chunk);
+
+            Platform[] newplatforms = chunk.GetComponentsInChildren<Platform>();
+            foreach(Platform p in newplatforms)
             {
-                AABB lastPlatform = platforms[platforms.Count - 1];
-                pos.x = lastPlatform.max.x + gapSize + nextPlatformWidth/2;
-                pos.y = -5;
+                platforms.Add(p.GetComponent<AABB>());
             }
 
-            if (isStartingPlatform)
+            Spring[] newsprings = chunk.GetComponentsInChildren<Spring>();
+            foreach(Spring s in newsprings)
             {
-                pos.y += -2;
-                nextPlatformHeight = 10;
+                springs.Add(s.GetComponent<AABB>());
             }
 
-            GameObject newPlatform = Instantiate(prefabPlatform, pos, Quaternion.identity);
-            newPlatform.transform.localScale = new Vector3(nextPlatformWidth, nextPlatformHeight, 1);
-
-
-            MeshRenderer mesh = newPlatform.GetComponent<MeshRenderer>();
-            if(mesh)
-            {
-                if (isStartingPlatform)
-                {
-                    mesh.material.SetTexture("_MainTex", startingTexture);
-                }
-                else
-                {
-                    int index = Random.Range(0, textures.Length);
-                    mesh.material.SetTexture("_MainTex", textures[index]);
-                }
-
-             
-            }
-
-            AABB aabb = newPlatform.GetComponent<AABB>();
-            if (aabb)
-            {
-                platforms.Add(aabb);
-                aabb.Recalc();
-            }
         }
 
         void LateUpdate() {
             //check player AABB against every platform AABB:
-            foreach(AABB platform in platforms){
+            foreach (AABB platform in platforms)
+            {
                 if (player.CollidesWith(platform))
                 {
                     //collision!!!
                     Vector3 fix = player.FindFix(platform);
                     player.BroadcastMessage("ApplyFix", fix);
-                    //print("Hi");
+                    //print("Hi"); was used to test if this was working
+
                 }
 
             }
-        }
 
-    }
-}
+            foreach (AABB spring in springs)
+            {
+
+                //check player AABB against every spring AABB:
+                if (player.CollidesWith(spring))
+                {
+                    //boing!!!
+                    PlayerMovement mover = player.GetComponent<PlayerMovement>();
+                    Spring s = spring.GetComponent<Spring>();
+
+
+                    if (mover != null)
+                    {
+                        print($"springiness is {s.springiness}");
+                        mover.LaunchUpwards(s.springiness);
+                    }
+                }
+            }
+                   
+        } // end LateUpdate()
+
+
+    }// end class
+}// end namespace

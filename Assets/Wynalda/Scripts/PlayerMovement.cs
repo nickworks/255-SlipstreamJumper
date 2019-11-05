@@ -107,5 +107,11 @@ namespace Wynalda
             if (fix.y > 0) isGrounded = true;
         }
 
+        public void LaunchUpwards(float upwardVel)
+        {
+            print($"launching upwards at a velocity of {upwardVel}");
+            velocity.y = upwardVel;
+        }
+
     }
 }
