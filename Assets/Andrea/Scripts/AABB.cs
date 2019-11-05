@@ -7,13 +7,14 @@ namespace Andrea
     public class AABB : MonoBehaviour
     {
         public Vector3 size;
+        public enum currentType {passThough, powerUp, hazard};
 
         public Vector3 Min { get; private set; }
         public Vector3 Max { get; private set; }
 
         void Start()
         {
-
+            
         }
 
         void Update()
@@ -27,6 +28,11 @@ namespace Andrea
             //Recalc();
         //}
 
+        /// <summary>
+        /// This function returns whether or not the AABB object is colliding with another.
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
         public bool CollidesWith(AABB other)
         {
             // check for gap to the left:
@@ -88,6 +94,9 @@ namespace Andrea
             return fix;
         }
 
+        /// <summary>
+        /// This function recalculates the bounds of the AABB object.
+        /// </summary>
         public void Recalc()
         {
             Vector3 halfSize = size / 2;
@@ -101,6 +110,9 @@ namespace Andrea
 
         }
 
+        /// <summary>
+        /// This function draws a wire cube representing the AABB dimensions.
+        /// </summary>
         void OnDrawGizmos()
         {
             Vector3 scaledSize = size;
@@ -111,6 +123,10 @@ namespace Andrea
             Gizmos.DrawWireCube(transform.position, scaledSize);
         }
         
+        /// <summary>
+        /// This function resolves collision by transforming the offending AABB away from the other on the shortest path.
+        /// </summary>
+        /// <param name="fix"></param>
         public void ApplyFix(Vector3 fix)
         {
             transform.position += fix;
