@@ -20,13 +20,13 @@ namespace Andrea {
         /// The minimum 
         /// </summary>
         public float gapSizeMin = 2;
-        public float gapSizeMax = 10;
+        public float gapSizeMax = 9;
 
-        Camera camera;
+        Camera cam;
 
         void Awake()
         {
-            camera = GetComponent<Camera>();
+            cam = GetComponent<Camera>();
         }
 
         void Start()
@@ -63,7 +63,7 @@ namespace Andrea {
         private float FindScreenLeftX()
         {
             Plane xy = new Plane(Vector3.forward, Vector3.zero);
-            Ray ray = camera.ScreenPointToRay(new Vector3(0, Screen.height / 2));
+            Ray ray = cam.ScreenPointToRay(new Vector3(0, Screen.height / 2));
 
             Debug.DrawRay(ray.origin, ray.direction * 10, Color.red);
             if (xy.Raycast(ray, out float dis))
@@ -80,7 +80,8 @@ namespace Andrea {
             // spawn new platforms:
 
             float gapSize = Random.Range(gapSizeMin, gapSizeMax);
-            float nextPlatformWidth = 10;
+            float nextPlatformWidth = Random.Range(3,10);
+            float nextPlatformHeight = Random.Range(1, 6);
 
             Vector3 pos = new Vector3();
 
@@ -88,6 +89,8 @@ namespace Andrea {
             {
                 AABB lastPlatform = platforms[platforms.Count - 1];
                 pos.x = lastPlatform.Max.x + gapSize + (nextPlatformWidth / 2);
+                pos.y = Random.Range(-2,3);
+                //pos.y = lastPlatform.Min.y + (nextPlatformHeight / 2) + Random.Range(-2, 3);
             }
 
             GameObject newPlatform = Instantiate(prefabPlatform, pos, Quaternion.identity);
