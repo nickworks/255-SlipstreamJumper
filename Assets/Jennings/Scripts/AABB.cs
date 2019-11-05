@@ -19,7 +19,7 @@ namespace Jennings {
         }
 
 
-        void LateUpdate()
+        void Update()
         {
             Recalc();
         }
@@ -76,6 +76,10 @@ namespace Jennings {
         {
             Vector3 halfSize = size / 2;
 
+            halfSize.x *= transform.localScale.x;
+            halfSize.y *= transform.localScale.y;
+            halfSize.z *= transform.localScale.z;
+
             min = transform.position - size / 2;
             max = transform.position + size / 2;
 
@@ -84,7 +88,14 @@ namespace Jennings {
 
         void OnDrawGizmos()
         {
-            Gizmos.DrawWireCube(transform.position, size);
+
+            Vector3 scaledSize = size;
+
+            scaledSize.x *= transform.localScale.x;
+            scaledSize.y *= transform.localScale.y;
+            scaledSize.z *= transform.localScale.z;
+
+            Gizmos.DrawWireCube(transform.position, scaledSize);
         }
 
         public void ApplyFix(Vector3 fix)

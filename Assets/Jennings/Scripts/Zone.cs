@@ -6,35 +6,36 @@ namespace Jennings {
     public class Zone : Pattison.Zone {
 
         new static public ZoneInfo info = new ZoneInfo() {
-            zoneName = "The Water Temple", //Name of my zone
+            zoneName = "Road Runner", //Name of my zone
             creator = "Student Lastname", //My Name
             level = "JenningsScene"
         };
 
-        public AABB a;
-        public AABB b;
+        public AABB player;
+        static public List<AABB> platforms = new List<AABB>();
 
-
-        void Start() {
-
+        void Awake()
+        {
+            platforms.Clear();
         }
 
-        void Update() {
+        void Start() {
+            
+        }
 
-            if (a.CollidesWith(b))
+        void LateUpdate() {
+
+            // check player AABB against every platform AABB
+            foreach(AABB platform in platforms)
             {
-                a.GetComponent<MeshRenderer>().material.color = Color.red;
-                b.GetComponent<MeshRenderer>().material.color = Color.red;
-
-                Vector3 fix = a.FindFix(b);
-                a.ApplyFix(fix);
-
-            } else
-            {
-                a.GetComponent<MeshRenderer>().material.color = Color.white;
-                b.GetComponent<MeshRenderer>().material.color = Color.white;
-
+                if (player.CollidesWith(platform))
+                {
+                    // COLLISION!
+                    Vector3 fix = player.FindFix(platform);
+                    player.BroadcastMessage("ApplyFix", fix);
+                }
             }
+            
         }
 
 

@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Jennings {
 
+    [RequireComponent(typeof(AABB))]
     public class PlayerMovement : MonoBehaviour {
 
         /// <summary>
@@ -104,6 +105,12 @@ namespace Jennings {
             velocity.y -= gravity * Time.deltaTime * gravityMultiplier;
         }
 
-        
+        public void ApplyFix(Vector3 fix)
+        {
+            if (fix.x != 0) velocity.x = 0;
+            if (fix.y != 0) velocity.y = 0;
+            if (fix.y > 0) isGrounded = true;
+        }
+
     }
 }
