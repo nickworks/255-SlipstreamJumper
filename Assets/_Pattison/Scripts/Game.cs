@@ -6,8 +6,14 @@ using UnityEngine.SceneManagement;
 public class Game : MonoBehaviour {
 
     public static Game main { get; private set; }
+    public static bool isPaused { get; private set; }
+    static public ZoneInfo queuedZone;
 
-    public bool isPaused { get; private set; }
+    static public void GameOver() {
+        // TODO: show the "game over" screen
+    }
+    
+
     float prePauseTimescale = 1;
 
     public float timePerZone = 30;
@@ -29,7 +35,6 @@ public class Game : MonoBehaviour {
     List<ZoneInfo> zonesUnplayed = new List<ZoneInfo>();
     public ZoneInfo currentZone { get; private set; }
 
-    static public ZoneInfo queuedZone;
 
     /// <summary>
     /// If the sceneswitcher isn't loaded yet, this method
@@ -115,4 +120,5 @@ public class Game : MonoBehaviour {
         SceneManager.LoadScene("MainMenu");
         Destroy(gameObject);
     }
+    
 }
