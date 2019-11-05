@@ -55,7 +55,8 @@ namespace Breu
 
 
         /// <summary>
-        /// this function returns how far to move THIS aadd so that it no longer overlaps another.
+        /// this function returns how far to move THIS aabb
+        /// so that it no longer overlaps another.
         /// assumed that the two overlap.
         /// only solves overlap in 2D, X-axis & Y-axis.
         /// </summary>

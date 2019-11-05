@@ -32,7 +32,7 @@ namespace Breu
         /// <summary>
         /// determines if player is groundpounding
         /// </summary>
-        bool isGroundPounding = false;
+        public static bool  isGroundPounding = false;
 
         /// <summary>
         /// determines if the player is standing on the "ground"
@@ -80,21 +80,22 @@ namespace Breu
 
         private void DoPhysicsVertical()
         {
-            //if player presses groundpound button player "groundpounds" until they hit ground
+            //if player presses groundpound button player "ground-pounds" until they hit ground
             if (Input.GetButtonDown("Fire3") && isGrounded == false)
             {
-                isGroundPounding = true;
+                isGroundPounding = true;                
             }
             else if (isGrounded == true)
             {
                 isGroundPounding = false;
             }
-            //add acceleration for groundpound
+            //add acceleration for ground-pound
             float groundPoundMult = 1;
-            //groundpound button pressed
+            //ground-pound button pressed
             if (isGroundPounding == true)
             {
                 groundPoundMult = groundPoundSpeed;
+                PlayerVelocity.x = 0;
             }
             else
             {

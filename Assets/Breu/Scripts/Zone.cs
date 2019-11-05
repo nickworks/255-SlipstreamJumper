@@ -17,16 +17,30 @@ namespace Breu {
         List<BreuAABB> platforms = new List<BreuAABB>();
         public GameObject platformPrefab;
 
-        public float platformSizeMin = 1;
-        public float platformSizeMax = 10;
+        public float startingPlatformWidth = 10;
+        public float startingPlatformHeight = 5;
 
-        public float gapSizeMin = 2;
-        public float gapSizeMax = 10;
+        public float platformXSizeMin = 1;
+        public float platformXSizeMax = 10;
+        
+        public float XGapSizeMin = 2;
+        public float XGapSizeMax = 10;
+
+        public float YGapSizeMin = 2;
+        public float YGapSizeMax = 10;
+
+        public Texture platformTexture;
+
         Camera camera;
 
         void Awake()
         {
             camera = GetComponent<Camera>();
+        }
+
+        void Start()
+        {
+            SpawnPlatform(true);
         }
 
         void Update()
@@ -71,23 +85,40 @@ namespace Breu {
             return -10;
         }
 
-        private void SpawnPlatform()
+        private void SpawnPlatform(bool isStarting = false)
         {
             //spawn new platform:
 
-            float gapSize = Random.Range(gapSizeMin, gapSizeMax);
-            float nextPlatformWidth = Random.Range(platformSizeMin, platformSizeMax);
+            float XGapSize = Random.Range(XGapSizeMin, XGapSizeMax);
+            float YGapSize = Random.Range(YGapSizeMin, YGapSizeMax);
+            float nextPlatformWidth = Random.Range(platformXSizeMin, platformXSizeMax);
+            float nextPlatformHeight = YGapSize;
+
+            if (isStarting == true)
+            {
+                nextPlatformWidth = startingPlatformWidth;
+                nextPlatformHeight = startingPlatformHeight;
+            }
+
 
             Vector3 pos = new Vector3();
 
             if (platforms.Count > 0)
             {
                 BreuAABB lastPlatform = platforms[platforms.Count - 1];
-                pos.x = lastPlatform.Max.x + gapSize + nextPlatformWidth/2;
+                pos.x = lastPlatform.Max.x + XGapSize + nextPlatformWidth/2;
+                pos.y = -nextPlatformHeight/2;
             }
 
             GameObject newPlatform = Instantiate(platformPrefab, pos, Quaternion.identity);
-            newPlatform.transform.localScale = new Vector3(nextPlatformWidth, 1, 1);
+            newPlatform.transform.localScale = new Vector3(nextPlatformWidth, nextPlatformHeight * 2, 1);
+
+            MeshRenderer meshPlatform = newPlatform.GetComponent<MeshRenderer>();
+            if (meshPlatform)
+            {
+                meshPlatform.material.SetTexture("_MainTex", platformTexture);
+                meshPlatform.material.SetTextureScale("_MainTex", new Vector2 ( 1, .5f));
+            }
 
             BreuAABB aabb = newPlatform.GetComponent<BreuAABB>();
 
