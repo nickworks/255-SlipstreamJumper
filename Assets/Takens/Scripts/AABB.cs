@@ -5,16 +5,18 @@ namespace Takens
 {
     public class AABB : MonoBehaviour
     {
-
+        public enum ObjectType {Solid, Passthrough, Spring, Fall, Player}
+        public ObjectType currentType = ObjectType.Solid;
         public Vector3 size;
         public bool manual = false;
 
         public Vector3 min { get; private set; }
         public Vector3 max { get; private set; }
+        private GameObject player;
 
         void Start()
         {
-
+            player = GameObject.FindGameObjectWithTag("Player");
         }
 
         // Update is called once per frame
@@ -25,7 +27,8 @@ namespace Takens
 
         public bool CollidesWith(AABB other)
         {
-            //check for gap to left
+
+                                                       //check for gap to left
             if (other.max.x < this.min.x) return false;//no collision
                                                        //check for gap to right
             if (other.min.x > this.max.x) return false;//no collision
@@ -33,6 +36,9 @@ namespace Takens
             if (other.max.y < this.min.y) return false;//no collision
                                                        //check for gap to below
             if (other.min.y > this.max.y) return false;//no collision
+
+         
+           
 
 
             //no gaps found, return true
@@ -89,8 +95,11 @@ namespace Takens
 
         public void ApplyFix(Vector3 fix)
         {
-            transform.position += fix;
-            Recalc();
+          
+                transform.position += fix;
+                Recalc();
+           
+            
         }
 
         void OnDrawGizmos()

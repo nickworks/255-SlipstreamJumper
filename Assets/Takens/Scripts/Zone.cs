@@ -15,25 +15,26 @@ namespace Takens {
         public AABB player;
         List<AABB> platforms = new List<AABB>();
 
+        public PlayerMovement PM;
         public GameObject prefabPlatform;
 
-        public float gapSizeMin = 2;
-        public float gapSizeMax = 10;
+        public float gapSizeMin = 0;
+        public float gapSizeMax = 0;
 
-        Camera camera;
+        Camera cam;
 
         void Awake()
         {
-            camera = GetComponent<Camera>();
+            cam = GetComponent<Camera>();
         }
 
         void Start() {
-            
+            PM = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>();   
         }
 
         void Update()
         {
-            if (platforms.Count < 5)
+            if (platforms.Count < 20)
             {
                 SpawnPlatform();
             }
@@ -43,12 +44,12 @@ namespace Takens {
 
         private void RemoveOffscreenPlatforms()
         {
-            float limitX = FindScreenLeftX();
+            float limitY = FindScreenLeftBottom();
             //limitX = FindScreenLeftX();
 
             for (int i = platforms.Count - 1; i >= 0; i--)
             {
-                if (platforms[i].max.x < limitX)
+                if (platforms[i].max.y < limitY)
                 {
                     AABB platform = platforms[i];
 
@@ -58,18 +59,18 @@ namespace Takens {
             }
         }
 
-        private float FindScreenLeftX()
+        private float FindScreenLeftBottom()
         {
             Plane xy = new Plane(Vector3.forward, Vector3.zero);
-            Ray ray = camera.ScreenPointToRay(new Vector3(0, Screen.height / 2));
+            Ray ray = cam.ScreenPointToRay(new Vector3(Screen.width/2, 0));
 
-            //  Debug.DrawRay(ray.origin,ray.direction * 10, Color.yellow);
+             Debug.DrawRay(ray.origin,ray.direction * 10, Color.yellow);
 
             if (xy.Raycast(ray, out float dis))
             {
                 Vector3 pt = ray.GetPoint(dis);
                 // limitX = pt.x;
-                return pt.x;
+                return pt.y;
             }
             else return -10;
 
@@ -81,18 +82,34 @@ namespace Takens {
             //spawn new platforms:
 
             float gapSize = Random.Range(gapSizeMin,gapSizeMax);
-            float nextPlatformWidth = 10;
+            float nextPlatformWidth = Random.Range(7, 10);
 
             Vector3 pos = new Vector3();
+            
 
             if (platforms.Count > 0)
             {
                 AABB lastPlatform = platforms[platforms.Count - 1];
-                pos.x = lastPlatform.max.x + gapSize + nextPlatformWidth/2;
+                //pos.x = lastPlatform.max.x + gapSize + nextPlatformWidth/2;
+                pos.y = lastPlatform.max.y + gapSize;
+                pos.x += Random.Range(-15f, 15f);
             }
 
             GameObject newPlatform = Instantiate(prefabPlatform, pos, Quaternion.identity);
-            newPlatform.transform.localScale = new Vector3(nextPlatformWidth, 1, 1);
+            float random = Random.Range(0f, 10f);
+            if (random > 8)
+            {
+                //platform is passthrough!
+                newPlatform.GetComponent<AABB>().currentType = AABB.ObjectType.Passthrough;
+                newPlatform.transform.localScale = new Vector3(nextPlatformWidth, .2f, 1);
+            }
+            else
+            {
+                newPlatform.GetComponent<AABB>().currentType = AABB.ObjectType.Solid;
+                newPlatform.transform.localScale = new Vector3(nextPlatformWidth, 1, 1);
+            }
+
+            
 
             AABB aabb = newPlatform.GetComponent<AABB>();
             if (aabb)
@@ -107,9 +124,26 @@ namespace Takens {
             foreach(AABB platform in platforms){
                 if (player.CollidesWith(platform))
                 {
-                    //collision!!!
                     Vector3 fix = player.FindFix(platform);
-                    player.BroadcastMessage("ApplyFix", fix);
+
+
+                    if (platform.currentType == AABB.ObjectType.Passthrough && !(fix.y > 0))
+                    {
+                       // Debug.Log("Passing Through!");
+                    }
+                    else
+                    {
+                        if((fix.y > 0) &&(PM.velocity.y > 0))
+                        {
+                            return;
+                        }
+                       
+                        //collision!!!
+                        player.BroadcastMessage("ApplyFix", fix);
+                    }
+                   
+                    
+                    
                 }
 
             }
