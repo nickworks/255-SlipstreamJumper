@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Pattison {
@@ -16,15 +17,20 @@ namespace Pattison {
         public AnimationCurve backgroundTransitionCurve;
         float timerBackground;
 
-        void Start() {
+        public RectTransform pauseMenu;
+        public EventSystem eventSystem;
 
-        }
-        public void UpdateTimer(float p) {
-            imageOfTimer.fillAmount = p;
+        void Start() {
+            if (eventSystem == null) eventSystem = GameObject.FindObjectOfType<EventSystem>();
         }
         void Update() {
-            buttonText.text = Game.main.isPaused ? "Play" : "Pause";
+            if (Game.main) {
+                buttonText.text = Game.main.isPaused ? "Play" : "Pause";
+                imageOfTimer.fillAmount = Game.main.timerUntilWarp / Game.main.timePerZone;
+            }
             AnimateBackground();
+            UpdatePauseMenu();
+            Focus();
         }
         public void SetLevelDetails(ZoneInfo info) {
             nameText.text = info.creator;
@@ -37,9 +43,23 @@ namespace Pattison {
             p = 1 - backgroundTransitionCurve.Evaluate(p);
             background.anchorMin = new Vector2(0, p);
         }
+        private void UpdatePauseMenu() {
+            if (pauseMenu) {
 
-        public void TogglePause() {
-            Game.main.TogglePause();
+                if (Game.main.isPaused && !pauseMenu.gameObject.activeSelf) {
+                    pauseMenu.gameObject.SetActive(true);
+                    eventSystem.SetSelectedGameObject(null);
+                }
+                if (!Game.main.isPaused && pauseMenu.gameObject.activeSelf) {
+                    pauseMenu.gameObject.SetActive(false);
+                }
+            }
+        }
+        void Focus() {
+            if (eventSystem == null) return;
+            if (eventSystem.currentSelectedGameObject != null) return;
+            if (eventSystem.firstSelectedGameObject == null) return;
+            eventSystem.SetSelectedGameObject(eventSystem.firstSelectedGameObject);
         }
     }
 }

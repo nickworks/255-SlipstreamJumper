@@ -11,58 +11,108 @@ public class Game : MonoBehaviour {
     float prePauseTimescale = 1;
 
     public float timePerZone = 30;
-    float timerUntilWarp;
-    List<ZoneInfo> zones = new List<ZoneInfo>();
+    public float timerUntilWarp { get; private set; }
+    private static List<ZoneInfo> _zones = new List<ZoneInfo>() {
+        Andrea.Zone.info,
+        Breu.Zone.info,
+        Caughman.Zone.info,
+        Jennings.Zone.info,
+        Myles.Zone.info,
+        Petzak.Zone.info,
+        Powers.Zone.info,
+        Smith.Zone.info,
+        Stralle.Zone.info,
+        Takens.Zone.info,
+        Wynalda.Zone.info
+    };
+    public static List<ZoneInfo> zones { get { return _zones; } }
     List<ZoneInfo> zonesUnplayed = new List<ZoneInfo>();
+    public ZoneInfo currentZone { get; private set; }
 
-    Pattison.MainHUD hud;
+    static public ZoneInfo queuedZone;
 
-    void Start() {
+    /// <summary>
+    /// If the sceneswitcher isn't loaded yet, this method
+    /// loads the scene and queues a zone for loading.
+    /// </summary>
+    /// <param name="zone">The zone to load</param>
+    static public void Play(ZoneInfo zone) {
+        queuedZone = zone;
+        if (main == null) {
+            SceneManager.LoadScene("SceneSwitcher");
+        }
+    }
 
+    void Awake() {
         if (main != null) {
             Destroy(gameObject);
             return;
         }
         DontDestroyOnLoad(gameObject);
         main = this;
-        hud = GetComponent<Pattison.MainHUD>();
-
-        zones.Add(Andrea.Zone.info);
-        zones.Add(Breu.Zone.info);
-        zones.Add(Caughman.Zone.info);
-        zones.Add(Jennings.Zone.info);
-        zones.Add(Myles.Zone.info);
-        zones.Add(Petzak.Zone.info);
-        zones.Add(Powers.Zone.info);
-        zones.Add(Smith.Zone.info);
-        zones.Add(Stralle.Zone.info);
-        zones.Add(Takens.Zone.info);
-        zones.Add(Wynalda.Zone.info);
-
+    }
+    void Start() {
+        
     }
     void Update() {
         if (Input.GetButtonDown("Pause")) TogglePause();
         if (isPaused) return;
 
+        WarpToQueuedZone();
+
         timerUntilWarp -= Time.unscaledDeltaTime;
-        hud.UpdateTimer(timerUntilWarp / timePerZone);
-        if (timerUntilWarp < 0) Warp();
+
+        if (timerUntilWarp < 0) WarpRandom();
     }
-    public void Warp() {
-        timerUntilWarp = timePerZone;
+
+    private void WarpToQueuedZone() {
+        if (queuedZone.level != null) {
+            print($"loading queued level:\"{queuedZone.level}\"");
+            WarpTo(queuedZone);
+            queuedZone = new ZoneInfo(); // clear the queue
+        }
+    }
+
+    public void WarpRandom() {
         if (zonesUnplayed.Count == 0) zonesUnplayed = new List<ZoneInfo>(zones);
         if (zonesUnplayed.Count == 0) return;
         int index = Random.Range(0, zonesUnplayed.Count);
-        Play(zonesUnplayed[index]);
-        zonesUnplayed.RemoveAt(index);
+        WarpTo(zonesUnplayed[index]);
     }
-    public void Play(ZoneInfo zone) {
+    public void WarpTo(ZoneInfo zone) {
+        timerUntilWarp = timePerZone;
         SceneManager.LoadScene(zone.level, LoadSceneMode.Single);
-        hud.SetLevelDetails(zone);
+        currentZone = zone;
+        RemoveCurrentFromZoneList();
+        print($"warped to \"{currentZone.level}\" ({zonesUnplayed.Count} left)");
+    }
+    private void RemoveCurrentFromZoneList() {
+        if (zonesUnplayed.Count == 0) zonesUnplayed = new List<ZoneInfo>(zones);
+        if (zonesUnplayed.Count == 0) return;
+        int index = zonesUnplayed.IndexOf(currentZone);
+        zonesUnplayed.RemoveAt(index);
+        
+    }
+    public void Skip() {
+        WarpRandom();
+        SetPause(false);
     }
     public void TogglePause() {
-        isPaused = !isPaused;
+        SetPause(null);
+    }
+    private void SetPause(bool? setTo = null) {
+
+        bool pauseValue = !isPaused;
+        if (setTo != null) {
+            if (setTo == true) pauseValue = true;
+            if (setTo == false) pauseValue = false;
+        }
+        isPaused = pauseValue;
         if (isPaused) prePauseTimescale = Time.timeScale;
         Time.timeScale = isPaused ? 0 : prePauseTimescale;
+    }
+    public void BackToMainMenu() {
+        SceneManager.LoadScene("MainMenu");
+        Destroy(gameObject);
     }
 }

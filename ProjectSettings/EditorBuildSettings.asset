@@ -6,6 +6,12 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/_Pattison/Scenes/MainMenu.unity
+    guid: 135235714059ddb47a825a147e8f8f2c
+  - enabled: 1
+    path: Assets/_Pattison/Scenes/SceneSwitcher.unity
+    guid: 9fc0d4010bbf28b4594072e72b8655ab
+  - enabled: 1
     path: Assets/Andrea/AndreaScene.unity
     guid: 9efd8c33280ecc441a41ca218a0b2583
   - enabled: 1
