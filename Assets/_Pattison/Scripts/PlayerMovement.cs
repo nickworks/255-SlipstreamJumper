@@ -94,5 +94,9 @@ namespace Pattison
             if (fix.y > 0) isGrounded = true;
         }
 
+        public void LaunchUpwards(float upwardVel) {
+            velocity.y = upwardVel;
+        }
+
     }
 }

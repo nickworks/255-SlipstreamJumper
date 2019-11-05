@@ -16,18 +16,32 @@ namespace Pattison {
         };
 
         public AABB player;
+        /// <summary>
+        /// The current chunks in our scene.
+        /// </summary>
+        List<Chunk> chunks = new List<Chunk>();
+        /// <summary>
+        /// The AABBs of all platforms in our scene.
+        /// </summary>
         List<AABB> platforms = new List<AABB>();
+        /// <summary>
+        /// The AABBs of all springs in our scene.
+        /// </summary>
+        List<AABB> springs = new List<AABB>();
 
-        public GameObject prefabPlatform;
+        /// <summary>
+        /// The chunks we are allowed to spawn.
+        /// </summary>
+        public Chunk[] prefabChunks;
 
         public float gapSizeMin = 2;
         public float gapSizeMax = 10;
 
-        Camera camera;
+        Camera cam;
 
 
         void Awake() {
-            camera = GetComponent<Camera>();
+            cam = GetComponent<Camera>();
         }
 
         void Start() {
@@ -36,32 +50,46 @@ namespace Pattison {
         void Update() {
 
 
-            if (platforms.Count < 5) {
-                SpawnPlatform();
+            if (chunks.Count < 2) {
+                SpawnChunk();
             }
 
-            RemoveOffscreenPlatforms();
+            RemoveOffscreenChunks();
 
         }
 
-        private void RemoveOffscreenPlatforms() {
+        private void RemoveOffscreenChunks() {
 
             float limitX = FindScreenLeftX();
 
-            for (int i = platforms.Count - 1; i >= 0; i--) {
+            for (int i = chunks.Count - 1; i >= 0; i--) {
 
-                if (platforms[i].max.x < limitX) {
+                if (chunks[i].rightEdge.position.x < limitX) {
 
-                    AABB platform = platforms[i];
-                    platforms.RemoveAt(i);
-                    Destroy(platform.gameObject);
+                    Chunk chunk = chunks[i];
+
+                    // remove this chunk's platforms from the game:
+                    Platform[] deadPlatforms = chunk.GetComponentsInChildren<Platform>();
+                    foreach(Platform platform in deadPlatforms) {
+                        platforms.Remove(platform.GetComponent<AABB>());
+                    }
+
+                    // remove this chunk's springs from the game:
+                    Spring[] deadSprings = chunk.GetComponentsInChildren<Spring>();
+                    foreach(Spring spring in deadSprings) {
+                        springs.Remove(spring.GetComponent<AABB>());
+                    }
+
+                    // remove the chunk from the game:
+                    chunks.RemoveAt(i);
+                    Destroy(chunk.gameObject);
                 }
             }
         }
 
         private float FindScreenLeftX() {
             Plane xy = new Plane(Vector3.forward, Vector3.zero);
-            Ray ray = camera.ScreenPointToRay(new Vector3(0, Screen.height / 2));
+            Ray ray = cam.ScreenPointToRay(new Vector3(0, Screen.height / 2));
             if (xy.Raycast(ray, out float dis)) {
                 Vector3 pt = ray.GetPoint(dis);
                 return pt.x;
@@ -70,28 +98,34 @@ namespace Pattison {
             return -10;
         }
 
-        private void SpawnPlatform() {
-            // spawn new platforms:
+        private void SpawnChunk() {
+            // spawn new chunk:
 
             float gapSize = Random.Range(gapSizeMin, gapSizeMax);
-            float nextPlatformWidth = 10;
 
-            Vector3 pos = new Vector3();
+            Vector3 pos = new Vector3(-5, -3, 0);
 
-            if (platforms.Count > 0) {
-                AABB lastPlatform = platforms[platforms.Count - 1];
-                pos.x = lastPlatform.max.x + gapSize + nextPlatformWidth/2;
-
+            if (chunks.Count > 0) {
+                pos.x = chunks[chunks.Count - 1].rightEdge.position.x + gapSize;
+                pos.y = chunks[chunks.Count - 1].rightEdge.position.y;
             }
 
-            GameObject newPlatform = Instantiate(prefabPlatform, pos, Quaternion.identity);
-            newPlatform.transform.localScale = new Vector3(nextPlatformWidth, 1, 1);
+            int index = Random.Range(0, prefabChunks.Length);
 
-            AABB aabb = newPlatform.GetComponent<AABB>();
-            if (aabb) {
-                platforms.Add(aabb);
-                aabb.Recalc();
+            Chunk chunk = Instantiate(prefabChunks[index], pos, Quaternion.identity);
+            chunks.Add(chunk);
+
+
+            Platform[] newplatforms = chunk.GetComponentsInChildren<Platform>();
+            foreach(Platform p in newplatforms) {
+                platforms.Add(p.GetComponent<AABB>());
             }
+
+            Spring[] newsprings = chunk.GetComponentsInChildren<Spring>();
+            foreach(Spring s in newsprings) {
+                springs.Add(s.GetComponent<AABB>());
+            }
+
         }
 
         void LateUpdate() {
@@ -104,6 +138,21 @@ namespace Pattison {
                     player.BroadcastMessage("ApplyFix", fix);
                 }
             }
-        }
-    }
-}
+
+            // check player AABB against every spring AABB:
+
+            foreach (AABB spring in springs) {
+                if (player.CollidesWith(spring)) {
+                    // boing!!!
+                    PlayerMovement mover = player.GetComponent<PlayerMovement>();
+                    Spring s = spring.GetComponent<Spring>();
+
+                    if (mover != null && s != null) {
+                        mover.LaunchUpwards(s.springiness);
+                    }
+                }
+            }
+
+        } // end LateUpdate()
+    } // end class
+} // end namespace
