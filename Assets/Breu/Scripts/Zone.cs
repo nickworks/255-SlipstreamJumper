@@ -13,58 +13,67 @@ namespace Breu {
         };
 
         public BreuAABB player;
-        //public BreuAABB b; //used in old colision
-        List<BreuAABB> platforms = new List<BreuAABB>();
-        public GameObject platformPrefab;
-
-        public float startingPlatformWidth = 10;
-        public float startingPlatformHeight = 5;
-
-        public float platformXSizeMin = 1;
-        public float platformXSizeMax = 10;
         
+        List<BreuChunks> chunks = new List<BreuChunks>();//current chinks on screen
+        List<BreuAABB> platforms = new List<BreuAABB>();//current AABBs of all platforms in scene
+        List<BreuAABB> springs = new List<BreuAABB>();//current AABBs of all springs in scene
+
+        public BreuChunks[] prefabChunk;//level chunk that can be spawned
+
+        public float SpringPower = 10;//how strong the push of a spring is
+                
         public float XGapSizeMin = 2;
         public float XGapSizeMax = 10;
-
-        public float YGapSizeMin = 2;
-        public float YGapSizeMax = 10;
+        
 
         public Texture platformTexture;
 
-        Camera camera;
+        Camera cam;
 
         void Awake()
         {
-            camera = GetComponent<Camera>();
+            cam = GetComponent<Camera>();
         }
 
         void Start()
         {
-            SpawnPlatform(true);
+            SpawnChunk(true);
         }
 
         void Update()
         {
-            if (platforms.Count < 5)
+            if (chunks.Count < 5)
             {
-                SpawnPlatform();
+                SpawnChunk();
             }
-            removeOffScreenPlatforms();
+            RemoveOffscreenChunks();
         }
 
-        private void removeOffScreenPlatforms()
+        private void RemoveOffscreenChunks()
         {
             float limitX;
             limitX = FindScreenLeft();
 
-            for (int i = platforms.Count - 1; i >= 0; i--)
+            for (int i = chunks.Count - 1; i >= 0; i--)
             {
-                if (platforms[i].Max.x < limitX)
+                if (chunks[i].rightedge.position.x < limitX)
                 {
-                    BreuAABB platform = platforms[i];
-                    platforms.RemoveAt(i);
+                    BreuChunks chunk = chunks[i];
+                    BreuPlatform[] deadPlatforms = chunk.GetComponentsInChildren<BreuPlatform>();
+                    foreach(BreuPlatform platform in deadPlatforms)
+                    {
+                        platforms.Remove(platform.GetComponent<BreuAABB>());
+                    }
+                    BreuSpring[] deadSprings = chunk.GetComponentsInChildren<BreuSpring>();
+                    foreach (BreuSpring spring in deadSprings)
+                    {
+                        springs.Remove(spring.GetComponentInChildren<BreuAABB>());
+                    }
 
-                    Destroy(platform.gameObject);
+
+                    chunks.RemoveAt(i);
+
+                    Destroy(chunk.gameObject);
                 }
             }
         }
@@ -72,7 +81,7 @@ namespace Breu {
         private float FindScreenLeft()
         {
             Plane xy = new Plane(Vector3.forward, Vector3.zero);
-            Ray ray = camera.ScreenPointToRay(new Vector3(0, Screen.height / 2));
+            Ray ray = cam.ScreenPointToRay(new Vector3(0, Screen.height / 2));
 
             if (xy.Raycast(ray, out float dis))
             {
@@ -85,48 +94,37 @@ namespace Breu {
             return -10;
         }
 
-        private void SpawnPlatform(bool isStarting = false)
+        private void SpawnChunk(bool isStarting = false)
         {
-            //spawn new platform:
+            //spawn new chunk:
 
-            float XGapSize = Random.Range(XGapSizeMin, XGapSizeMax);
-            float YGapSize = Random.Range(YGapSizeMin, YGapSizeMax);
-            float nextPlatformWidth = Random.Range(platformXSizeMin, platformXSizeMax);
-            float nextPlatformHeight = YGapSize;
-
-            if (isStarting == true)
-            {
-                nextPlatformWidth = startingPlatformWidth;
-                nextPlatformHeight = startingPlatformHeight;
-            }
-
-
+            float GapSize = Random.Range(XGapSizeMin, XGapSizeMax);
+                        
             Vector3 pos = new Vector3();
 
-            if (platforms.Count > 0)
+            if (chunks.Count > 0)
             {
-                BreuAABB lastPlatform = platforms[platforms.Count - 1];
-                pos.x = lastPlatform.Max.x + XGapSize + nextPlatformWidth/2;
-                pos.y = -nextPlatformHeight/2;
+                pos.x = chunks[chunks.Count - 1].rightedge.position.x + GapSize;
+                pos.y = chunks[chunks.Count - 1].rightedge.position.y;
             }
 
-            GameObject newPlatform = Instantiate(platformPrefab, pos, Quaternion.identity);
-            newPlatform.transform.localScale = new Vector3(nextPlatformWidth, nextPlatformHeight * 2, 1);
+            int index = Random.Range(0, prefabChunk.Length);
 
-            MeshRenderer meshPlatform = newPlatform.GetComponent<MeshRenderer>();
-            if (meshPlatform)
+            BreuChunks chunk = Instantiate(prefabChunk[index], pos, Quaternion.identity);
+            chunks.Add(chunk);
+
+            BreuPlatform[] newplatforms = chunk.GetComponentsInChildren<BreuPlatform>();
+            foreach (BreuPlatform p in newplatforms)
             {
-                meshPlatform.material.SetTexture("_MainTex", platformTexture);
-                meshPlatform.material.SetTextureScale("_MainTex", new Vector2 ( 1, .5f));
+                platforms.Add(p.GetComponent<BreuAABB>());
             }
 
-            BreuAABB aabb = newPlatform.GetComponent<BreuAABB>();
-
-            if (aabb != null)
+            BreuSpring[] newsprings = chunk.GetComponentsInChildren<BreuSpring>();
+            foreach (BreuSpring s in newsprings)
             {
-                platforms.Add(aabb);
-                aabb.recalc();
+                springs.Add(s.GetComponent<BreuAABB>());
             }
+
         }
 
         void LateUpdate()
@@ -136,13 +134,26 @@ namespace Breu {
             foreach(BreuAABB platorm in platforms)
             {
                 if (player.collidesWith(platorm))
-                {
+                {//collision - platform
                     Vector3 fix = player.findFix(platorm);
                     player.BroadcastMessage("applyFix", fix);
                 }
             }
 
 
+            //Player AABB collision vs Spring AABB check
+            foreach (BreuAABB spring in springs)
+            {
+                if (player.collidesWith(spring))
+                {//collision - plaform
+                    BreuPlayerMovement mover = player.GetComponent<BreuPlayerMovement>();
+                    if (mover != null)
+                    {
+                        mover.launchUpwards(SpringPower);
+                    }
+                }
+
+            }
 
             /* using in old collision
             if (player.collidesWith(b))

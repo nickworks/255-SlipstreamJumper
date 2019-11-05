@@ -164,5 +164,13 @@ namespace Breu
                 isGrounded = true;
             }
         }
+
+
+        public void launchUpwards(float yVelocity)
+        {
+            
+            PlayerVelocity.y = yVelocity;
+            isGroundPounding = false;
+        }
     }
 }
