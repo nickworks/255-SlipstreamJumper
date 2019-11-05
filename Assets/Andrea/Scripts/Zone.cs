@@ -6,15 +6,36 @@ namespace Andrea {
     public class Zone : Pattison.Zone {
 
         new static public ZoneInfo info = new ZoneInfo() {
-            zoneName = "The Water Temple",
-            creator = "Student Lastname",
+            zoneName = "Something Cool",
+            creator = "Vincent Andrea",
             level = "AndreaScene"
         };
 
+
+        /// <summary>
+        /// The AABB of the player.
+        /// </summary>
         public AABB player;
+
+        /// <summary>
+        /// The current collection of chunks in the scene.
+        /// </summary>
+        List<Chunk> chunks = new List<Chunk>();
+
+        /// <summary>
+        /// The current collection of platform AABBs in the scene.
+        /// </summary>
         List<AABB> platforms = new List<AABB>();
 
-        public GameObject prefabPlatform;
+        /// <summary>
+        /// The current colleciton of spring AABBs in the scene.
+        /// </summary>
+        List<AABB> springs = new List<AABB>();
+
+        /// <summary>
+        /// The collection of available chunks.
+        /// </summary>
+        public Chunk[] prefabChunks;
 
         /// <summary>
         /// The minimum 
@@ -36,25 +57,38 @@ namespace Andrea {
 
         void Update()
         {
-            if (platforms.Count < 5)
+            if (chunks.Count < 5)
             {
-                SpawnPlatform();
+                SpawnChunk();
             }
-            RemoveOffScreenPlatforms();
+            RemoveOffscreenChunks();
         }
 
-        private void RemoveOffScreenPlatforms()
+        private void RemoveOffscreenChunks()
         {
             float limitX = -20;
             limitX = FindScreenLeftX();
-            for (int i = platforms.Count - 1; i >= 0; i--)
+            for (int i = chunks.Count - 1; i >= 0; i--)
             {
-                if (platforms[i].Max.x < limitX)
+                if (chunks[i].rightEdge.position.x < limitX)
                 {
-                    AABB platform = platforms[i];
+                    Chunk chunk = chunks[i];
 
-                    platforms.RemoveAt(i);
-                    Destroy(platform.gameObject);
+                    Platform[] deadPlatforms = chunk.GetComponentsInChildren<Platform>();
+                    foreach (Platform platform in deadPlatforms)
+                    {
+                        platforms.Remove(platform.GetComponent<AABB>());
+                    }
+
+                    Spring[] deadSprings = chunk.GetComponentsInChildren<Spring>();
+                    foreach (Spring spring in deadSprings)
+                    {
+                        springs.Remove(spring.GetComponent<AABB>());
+                    }
+
+                    chunks.RemoveAt(i);
+                    Destroy(chunk.gameObject);
+
                 }
 
             }
@@ -75,32 +109,37 @@ namespace Andrea {
             return -20;
         }
 
-        private void SpawnPlatform()
+        private void SpawnChunk()
         {
-            // spawn new platforms:
+            // spawn new chunks:
 
             float gapSize = Random.Range(gapSizeMin, gapSizeMax);
-            float nextPlatformWidth = Random.Range(3,10);
-            float nextPlatformHeight = Random.Range(1, 6);
 
             Vector3 pos = new Vector3();
 
-            if (platforms.Count > 0)
+            if (chunks.Count > 0)
             {
-                AABB lastPlatform = platforms[platforms.Count - 1];
-                pos.x = lastPlatform.Max.x + gapSize + (nextPlatformWidth / 2);
-                pos.y = Random.Range(-2,3);
+                pos.x = chunks[chunks.Count - 1].rightEdge.position.x + gapSize;
+                pos.y = chunks[chunks.Count - 1].rightEdge.position.y;
                 //pos.y = lastPlatform.Min.y + (nextPlatformHeight / 2) + Random.Range(-2, 3);
             }
 
-            GameObject newPlatform = Instantiate(prefabPlatform, pos, Quaternion.identity);
-            newPlatform.transform.localScale = new Vector3(nextPlatformWidth, 1, 1);
-            AABB aabb = newPlatform.GetComponent<AABB>();
-            if (aabb)
+            int index = Random.Range(0, prefabChunks.Length);
+            Chunk chunk = Instantiate(prefabChunks[index], pos, Quaternion.identity);
+            chunks.Add(chunk);
+
+            Platform[] newPlatforms = chunk.GetComponentsInChildren<Platform>();
+            foreach (Platform p in newPlatforms)
             {
-                platforms.Add(aabb);
-                aabb.Recalc();
+                platforms.Add(p.GetComponent<AABB>());
             }
+
+            Spring[] newSprings = chunk.GetComponentsInChildren<Spring>();
+            foreach (Spring s in newSprings)
+            {
+                springs.Add(s.GetComponent<AABB>());
+            }
+
         }
 
         void LateUpdate() 
@@ -112,6 +151,23 @@ namespace Andrea {
                 {
                     Vector3 fix = player.FindFix(platform);
                     player.BroadcastMessage("ApplyFix", fix);
+                }
+            }
+
+            // check player AABB against every spring AABB:
+            foreach (AABB spring in springs)
+            {
+                if (player.CollidesWith(spring))
+                {
+                    
+                    PlayerMovement playerMovement = player.GetComponent<PlayerMovement>();
+                    
+                    Spring s = spring.GetComponent<Spring>();
+
+                    if (playerMovement != null && s != null)
+                    {
+                        playerMovement.LaunchUpwards(s.springiness);
+                    }
                 }
             }
         }

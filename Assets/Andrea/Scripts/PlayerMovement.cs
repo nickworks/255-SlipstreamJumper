@@ -124,5 +124,10 @@ namespace Andrea
             }
         }
 
+        public void LaunchUpwards(float upwardVelocity)
+        {
+            velocity.y = upwardVelocity;
+        }
+
     }
 }
