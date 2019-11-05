@@ -25,7 +25,7 @@ namespace Pattison {
         }
         void Update() {
             if (Game.main) {
-                buttonText.text = Game.main.isPaused ? "Play" : "Pause";
+                buttonText.text = Game.isPaused ? "Play" : "Pause";
                 imageOfTimer.fillAmount = Game.main.timerUntilWarp / Game.main.timePerZone;
             }
             AnimateBackground();
@@ -37,7 +37,7 @@ namespace Pattison {
             levelText.text = info.zoneName;
         }
         private void AnimateBackground() {
-            timerBackground += Game.main.isPaused ? Time.unscaledDeltaTime : -Time.unscaledDeltaTime;
+            timerBackground += Game.isPaused ? Time.unscaledDeltaTime : -Time.unscaledDeltaTime;
             timerBackground = Mathf.Clamp(timerBackground, 0, backgroundTransitionTime);
             float p = timerBackground / backgroundTransitionTime;
             p = 1 - backgroundTransitionCurve.Evaluate(p);
@@ -46,11 +46,11 @@ namespace Pattison {
         private void UpdatePauseMenu() {
             if (pauseMenu) {
 
-                if (Game.main.isPaused && !pauseMenu.gameObject.activeSelf) {
+                if (Game.isPaused && !pauseMenu.gameObject.activeSelf) {
                     pauseMenu.gameObject.SetActive(true);
                     eventSystem.SetSelectedGameObject(null);
                 }
-                if (!Game.main.isPaused && pauseMenu.gameObject.activeSelf) {
+                if (!Game.isPaused && pauseMenu.gameObject.activeSelf) {
                     pauseMenu.gameObject.SetActive(false);
                 }
             }
