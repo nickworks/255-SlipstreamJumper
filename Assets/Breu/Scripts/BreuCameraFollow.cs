@@ -6,28 +6,18 @@ namespace Breu
 {
     public class BreuCameraFollow : MonoBehaviour
     {
-        public Transform Target;
+        public Transform Target;//what the camera will follow
 
-        public float easing = 20;
-
-        // Start is called before the first frame update
-        void Start()
-        {
-
-        }
+        public float easing = 20;//determines how fast the camera will follow
 
         // Update is called once per frame
         void LateUpdate()
         {
             if (Target != null)
             {
+                Vector3 newPos = new Vector3(0, Target.position.y, transform.position.z);//set the camera to follow only on the y axis
 
-                Vector3 newPos = Target.position;
-                newPos.z = transform.position.z;
-
-                //transform.position += (newPos -transform.position) * Time.deltaTime ;
-
-                transform.position = Vector3.Lerp(transform.position, newPos, Time.deltaTime * easing);
+                transform.position = Vector3.Lerp(transform.position, newPos, Time.deltaTime * easing);//set camera to "lag" behind target
             }
         }
     }
