@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Takens
 {
 
-    public class MoveLeft : MonoBehaviour
+    public class MoveDown : MonoBehaviour
     {
         /// <summary>
         ///How fast to move all moveLeft objects to the left (meters-per-second)
@@ -16,7 +16,7 @@ namespace Takens
         }
 
         // Update is called once per frame
-        void Update()
+        void LateUpdate()
         {
             //for moving left
             //transform.position += speed * Vector3.left * Time.deltaTime;

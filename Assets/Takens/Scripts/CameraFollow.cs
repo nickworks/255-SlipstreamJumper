@@ -19,8 +19,8 @@ namespace Takens
             {
 
                 Vector3 newPos = transform.position;
-                if(target.position.y > transform.position.y)
-                newPos.y += (target.position.y- transform.position.y)*1f * Time.deltaTime;
+                if (target.position.y > transform.position.y + 5f)
+                newPos.y += (target.position.y- transform.position.y)* .8f * Time.deltaTime;
 
 
                 transform.position = newPos;

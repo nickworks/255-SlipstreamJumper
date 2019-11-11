@@ -221,6 +221,10 @@ MonoBehaviour:
   PM: {fileID: 0}
   prefabChunks:
   - {fileID: 725836681903111410, guid: f647cd0e996750f4a83b3c9f04c5fee1, type: 3}
+  - {fileID: 2735878041455222487, guid: a9226aeda4c0a1843ae10e3b5b69574b, type: 3}
+  - {fileID: 7570772978968367178, guid: 280314cb1063c684892597764a9a4caf, type: 3}
+  - {fileID: 7471565810889911486, guid: 6a910fb363c5f144db08d5ec11efca9d, type: 3}
+  - {fileID: 3126840820445006128, guid: 91bd427b561e48741a74fa2243d4ef10, type: 3}
   gapSizeMin: 1.5
   gapSizeMax: 2.5
 --- !u!114 &615584247

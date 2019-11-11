@@ -111,6 +111,8 @@ namespace Takens
                 transform.position += 2 * Vector3.down * Time.deltaTime;
             }
         }
+        
+
 
         public void LaunchUpwards()
         {

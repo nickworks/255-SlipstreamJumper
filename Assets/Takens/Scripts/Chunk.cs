@@ -6,7 +6,7 @@ namespace Takens
 {
     public class Chunk : MonoBehaviour
     {
-        public Transform bottomEdge;
+        public Transform topEdge;
         // Start is called before the first frame update
         void Start()
         {

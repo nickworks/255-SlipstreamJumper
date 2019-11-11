@@ -68,7 +68,7 @@ namespace Takens {
 
             for (int i = chunks.Count - 1; i >= 0; i--)
             {
-                if (chunks[i].bottomEdge.position.y < limitY)
+                if (chunks[i].topEdge.position.y < limitY)
                 {
                     Chunk chunk = chunks[i];
                     Platform[] deadPlatforms = chunk.GetComponentsInChildren<Platform>();
@@ -84,6 +84,11 @@ namespace Takens {
                     chunks.RemoveAt(i);
                     Destroy(chunk.gameObject);
                 }
+                if(player.transform.position.y < limitY)
+                {
+                    Game.GameOver();
+                    Debug.Log("Game Over!!");
+                }
             }
         }
 
@@ -92,7 +97,7 @@ namespace Takens {
             Plane xy = new Plane(Vector3.forward, Vector3.zero);
             Ray ray = cam.ScreenPointToRay(new Vector3(Screen.width/2, 0));
 
-             Debug.DrawRay(ray.origin,ray.direction * 10, Color.yellow);
+             Debug.DrawRay(ray.origin,ray.direction * 13, Color.yellow);
 
             if (xy.Raycast(ray, out float dis))
             {
@@ -116,14 +121,19 @@ namespace Takens {
 
             if (chunks.Count > 0)
             {
-                pos.y = chunks[chunks.Count - 1].bottomEdge.position.y + gapSize;
-                pos.x = chunks[chunks.Count - 1].bottomEdge.position.x;
+                pos.y = chunks[chunks.Count - 1].topEdge.position.y + gapSize;
+                pos.x = chunks[chunks.Count - 1].topEdge.position.x;
             }
 
             int index = Random.Range(0, prefabChunks.Length);
 
             Chunk chunk = Instantiate(prefabChunks[index], pos, Quaternion.identity);
             chunks.Add(chunk);
+            int flip = Random.Range(0, 10);
+            if (flip >= 5)
+            {
+                chunk.transform.localScale = new Vector3(-1f, 1f, 1f);
+            }
             Platform[] newPlatforms = chunk.GetComponentsInChildren<Platform>();
             foreach(Platform p in newPlatforms){
                 platforms.Add(p.GetComponent<AABB>());
