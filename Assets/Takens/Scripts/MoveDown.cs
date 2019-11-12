@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 namespace Takens
 {
-
+    /// <summary>
+    /// Moves objects down by a constant rate
+    /// </summary>
     public class MoveDown : MonoBehaviour
     {
         /// <summary>
@@ -11,18 +13,14 @@ namespace Takens
         /// </summary>
         public static float speed = 2f;
 
-        // Start is called before the first frame update
-        void Start() { 
-        }
-
         // Update is called once per frame
         void LateUpdate()
         {
-            //for moving left
-            //transform.position += speed * Vector3.left * Time.deltaTime;
-
-            transform.position += speed * Vector3.down * Time.deltaTime;
-
+            if (!Game.isPaused)
+            {
+                //moves the object down by speed (meters) per second
+                transform.position += speed * Vector3.down * Time.deltaTime;
+            }
         }
     }
 }
