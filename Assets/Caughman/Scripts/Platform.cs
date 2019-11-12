@@ -2,13 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Caughman
+public class Platform : MonoBehaviour
 {
-    [RequireComponent(typeof(AABB))]
-    public class Platform : MonoBehaviour
+    // Start is called before the first frame update
+    void Start()
     {
-
         
+    }
 
+    // Update is called once per frame
+    void Update()
+    {
+        
     }
 }
