@@ -49,15 +49,6 @@ namespace Wynalda
         Camera cam;
 
         /// <summary>
-        /// Array of possible textures
-        /// </summary>
-        public Texture[] textures;
-        /// <summary>
-        /// Starting Texture
-        /// </summary>
-        public Texture startingTexture;
-
-        /// <summary>
         /// Awake!
         /// </summary>
         void Awake()
