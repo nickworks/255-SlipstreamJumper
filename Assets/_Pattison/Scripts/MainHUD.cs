@@ -27,14 +27,13 @@ namespace Pattison {
             if (Game.main) {
                 buttonText.text = Game.isPaused ? "Play" : "Pause";
                 imageOfTimer.fillAmount = Game.main.timerUntilWarp / Game.main.timePerZone;
+
+                nameText.text = Game.main.currentZone.creator;
+                levelText.text = Game.main.currentZone.zoneName;
             }
             AnimateBackground();
             UpdatePauseMenu();
             Focus();
-        }
-        public void SetLevelDetails(ZoneInfo info) {
-            nameText.text = info.creator;
-            levelText.text = info.zoneName;
         }
         private void AnimateBackground() {
             timerBackground += Game.isPaused ? Time.unscaledDeltaTime : -Time.unscaledDeltaTime;

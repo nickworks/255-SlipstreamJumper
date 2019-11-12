@@ -12,8 +12,8 @@ public class Game : MonoBehaviour {
 
     static public void GameOver() {
         if (Game.main == null) return; // the game isn't running...
+        Destroy(Game.main.gameObject);
         SceneManager.LoadScene("GameOver");
-
     }
     
 
