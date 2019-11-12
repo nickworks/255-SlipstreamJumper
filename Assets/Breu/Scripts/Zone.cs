@@ -12,7 +12,9 @@ namespace Breu {
             level = "BreuScene"
         };
 
-        public BreuAABB player;
+        public BreuAABB player;//AABB for the player character
+
+        public BreuAABB LeftScreenEdge;//AABB use to determin the left edge
         
         List<BreuChunks> chunks = new List<BreuChunks>();//current chinks on screen
         List<BreuAABB> platforms = new List<BreuAABB>();//current AABBs of all platforms in scene
@@ -260,6 +262,11 @@ namespace Breu {
                     }
                 }
 
+            }
+
+            if (player.collidesWith(LeftScreenEdge))
+            {
+                Game.GameOver();
             }
 
             /* using in old collision

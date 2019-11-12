@@ -55,10 +55,13 @@ namespace Breu
         /// Current velocity of the player, meters per seconds (m/s)
         /// </summary>
         Vector3 PlayerVelocity = new Vector3();
+
+        private Vector2 ScreeBounds;
         
         void Start()
         {
             PickUpTimeRemaining = 0;
+            ScreeBounds = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, Camera.main.transform.position.z));
         }
 
         void Update()
@@ -69,7 +72,7 @@ namespace Breu
             
             transform.position += PlayerVelocity * Time.deltaTime;//add velocity to position
 
-            //ClampToGroundPlane();
+            ClampToRightPlane();
 
             isGrounded = false;//assumes player is not on gorund
 
@@ -77,9 +80,7 @@ namespace Breu
             {
                 isGrounded = true;
                 PickUpTimeRemaining -= Time.deltaTime;
-            }
-
-
+            }    
         }
 
         private void DoPhysicsHorizontal()
@@ -138,23 +139,16 @@ namespace Breu
             
         }
 
-        private void ClampToGroundPlane()
+        /// <summary>
+        /// keep the player from going off screen to the right.
+        /// </summary>
+        private void ClampToRightPlane()
         {
-            //clamp to ground plane: (y=0)
-            if (transform.position.y < 0)
-            {
                 Vector3 pos = transform.position;
-                pos.y = 0;
+                pos.x = Mathf.Clamp(pos.x, ScreeBounds.x * -2, ScreeBounds.x);
                 transform.position = pos;
 
-                PlayerVelocity.y = 0;
-
-                isGrounded = true;
-            }
-            else
-            {
-                isGrounded = false;
-            }
+                PlayerVelocity.x = 0;
         }
 
 
