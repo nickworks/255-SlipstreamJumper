@@ -10,7 +10,7 @@ namespace Breu
         /// <summary>
         /// the speed VreuMoveLeft objects move left (meter/sec)
         /// </summary>
-        public static float speed = 5;
+        public static float speed = 6;
 
         /// <summary>
         /// unused

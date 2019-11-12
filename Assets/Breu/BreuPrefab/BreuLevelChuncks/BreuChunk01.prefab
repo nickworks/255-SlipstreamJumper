@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5326182947334330755}
   - component: {fileID: 5425964305959902662}
-  - component: {fileID: 389590147673786780}
+  - component: {fileID: 4399118203630477031}
   m_Layer: 0
   m_Name: BreuChunk01
   m_TagString: Untagged
@@ -56,7 +56,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rightedge: {fileID: 8388442228055302337}
---- !u!114 &389590147673786780
+--- !u!114 &4399118203630477031
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -65,7 +65,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2105650124833104433}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0236338f8a864634986fe9a0f1f78732, type: 3}
+  m_Script: {fileID: 11500000, guid: 2841cf920ec12ed4ea63c3f9b42d922f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &4869575814153820326
@@ -92,7 +92,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4869575814153820326}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 28.11, y: 19.99, z: 10.71875}
+  m_LocalPosition: {x: 28.11, y: 19.99, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 5326182947334330755}

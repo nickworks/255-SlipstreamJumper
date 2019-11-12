@@ -110,6 +110,9 @@ namespace Breu {
             if (xy.Raycast(ray, out float dis))
             {
                 Vector3 pt = ray.GetPoint(dis);
+
+                LeftScreenEdge.transform.position = pt - new Vector3 (1, 0, 0);
+
                 return pt.x;
                 
                 //Debug.DrawRay(ray.origin, ray.direction * dis, Color.red);
@@ -133,7 +136,7 @@ namespace Breu {
             if (chunks.Count > 0)
             {
                 pos.x = chunks[chunks.Count - 1].rightedge.position.x + GapSize;
-                pos.y = chunks[chunks.Count - 1].rightedge.position.y;
+                pos.y = chunks[chunks.Count - 1].rightedge.position.y;                
             }
 
             int index = Random.Range(0, prefabChunk.Length);//selects chunk at random from array

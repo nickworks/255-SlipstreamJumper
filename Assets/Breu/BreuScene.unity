@@ -258,7 +258,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 10
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -282,7 +282,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 615584242}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 2.66, z: -5}
+  m_LocalPosition: {x: 0, y: 0, z: -5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1814536650}
@@ -307,6 +307,8 @@ MonoBehaviour:
   - {fileID: 6851582233848276944, guid: d9e844beab0e84042b1a1b18531505fc, type: 3}
   - {fileID: 5425964305959902662, guid: c601decdc3d583e429005d7daf98b5e7, type: 3}
   - {fileID: 3138950188222649107, guid: 1097c56850da13a4090fbe56f58923a3, type: 3}
+  - {fileID: 4404875664544116138, guid: 35bc8e6cfc157f2489c1526f6318392b, type: 3}
+  - {fileID: 4454356781748889536, guid: 8060872419c203b4a859159556475d36, type: 3}
   SpringPower: 30
   XGapSizeMin: 2
   XGapSizeMax: 10
@@ -533,7 +535,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a522dbd656f3a4a4ba64b7d7c6a80ac8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HoriSpeed: 7
+  HorizontalSpeed: 5
+  LeftSpeedMult: 1.75
   jumpImpulse: 15
   Gravity: 30
   PickUpTimer: 5
@@ -549,6 +552,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Left Kill Zone
+      objectReference: {fileID: 0}
+    - target: {fileID: 6155980108897950192, guid: 437c5cdd7cddcfb41b225da47b4803d4,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3301743733778358145, guid: 437c5cdd7cddcfb41b225da47b4803d4,
         type: 3}
@@ -613,7 +621,12 @@ PrefabInstance:
     - target: {fileID: 3301743733778358145, guid: 437c5cdd7cddcfb41b225da47b4803d4,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 67.347
+      value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 4284489724705195852, guid: 437c5cdd7cddcfb41b225da47b4803d4,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 437c5cdd7cddcfb41b225da47b4803d4, type: 3}
