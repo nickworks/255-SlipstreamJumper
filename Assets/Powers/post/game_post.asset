@@ -101,13 +101,13 @@ MonoBehaviour:
     value: 1
   focusDistance:
     overrideState: 1
-    value: 925
+    value: 500
   aperture:
     overrideState: 1
     value: 0.05
   focalLength:
     overrideState: 1
-    value: 300
+    value: 82
   kernelSize:
     overrideState: 1
     value: 1
