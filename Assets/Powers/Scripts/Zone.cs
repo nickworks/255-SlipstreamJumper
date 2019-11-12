@@ -24,16 +24,14 @@ namespace Powers
 
         [Space(10)]
 
-        //these gameobjects are used to interact with the ui, showing score and what powerups are obtained
-        public UnityEngine.UI.Text scoreMain;
-        public UnityEngine.UI.Text scoreShadow;
-        public UnityEngine.UI.Image slowTimeUI;
-        public UnityEngine.UI.Image shieldUI;
-        public GameObject gameOverUI;
-        public UnityEngine.UI.Text gameOverScore;
+        //these gameobjects are used to interact with the ui, showing what powerups are obtained
+        public GameObject slowTimeUI;
+        public GameObject shieldUI;
 
         //these lists are used to refer to different object types
         List<AABB> Platforms = new List<AABB>();
+        List<AABB> Edges = new List<AABB>();
+        List<AABB> Bottom = new List<AABB>();
         List<AABB> Hazards = new List<AABB>();
         List<AABB> Springs = new List<AABB>();
         List<AABB> Shields = new List<AABB>();
@@ -43,6 +41,7 @@ namespace Powers
 
         //these variables refer to the objects spawned for each object type
         public GameObject screenBounds;
+        public GameObject bottomBounds;
         public GameObject buildingPlatform;
         public GameObject elevatorPlatform;
         public GameObject hazardObject;
@@ -58,24 +57,16 @@ namespace Powers
         private GameObject newPlatform;
         private bool firstPlatform = true;
 
-        [HideInInspector]
-        public int playerScore = 0;
-
         Camera gameCam;
 
         void Awake()
         {
             gameCam = GetComponent<Camera>();
-            gameOverUI.SetActive(false);
         }
 
         void FixedUpdate()
         {
             CheckCollisons();
-
-            if(!playerMove.isDead) playerScore++;
-            scoreMain.text = playerScore.ToString();
-            scoreShadow.text = playerScore.ToString();
         }
 
         void Update()
@@ -91,6 +82,19 @@ namespace Powers
                 RemoveOffScreenObjects(Springs);
                 RemoveOffScreenObjects(Shields);
                 RemoveOffScreenObjects(SlowTimes);
+
+                //check if powerups are enabled
+                if (playerMove.slowTimePowerup == 0) slowTimeUI.SetActive(false);
+                else slowTimeUI.SetActive(true);
+
+                if (playerMove.shieldPowerup == false) shieldUI.SetActive(false);
+                else shieldUI.SetActive(true);
+            }
+            //otherwise, end game
+            else
+            {
+                Time.timeScale = 1;
+                Game.GameOver();
             }
         }
 
@@ -142,7 +146,22 @@ namespace Powers
             if (firstPlatform)
             {
                 platformType = 0;
-                firstPlatform = false;
+
+                newPlatform = Instantiate(screenBounds, new Vector3(10.75f, 0, 0), Quaternion.identity);
+                AABB boundsAABB = newPlatform.GetComponent<AABB>();
+                Edges.Add(boundsAABB);
+                boundsAABB.Recalc();
+
+                newPlatform = Instantiate(screenBounds, new Vector3(-10.75f, 0, 0), Quaternion.identity);
+                boundsAABB = newPlatform.GetComponent<AABB>();
+                Edges.Add(boundsAABB);
+                boundsAABB.Recalc();
+
+                newPlatform = Instantiate(bottomBounds, new Vector3(0, -7.5f, 0), Quaternion.identity);
+                boundsAABB = newPlatform.GetComponent<AABB>();
+                Bottom.Add(boundsAABB);
+                boundsAABB.Recalc();
+
             }
             else platformType = Random.Range(0, 2);
 
@@ -165,6 +184,7 @@ namespace Powers
             else if (platformType == 1) newPlatform = Instantiate(elevatorPlatform, pos, Quaternion.identity);
 
             AABB aabb = newPlatform.GetComponent<AABB>();
+
             if (aabb)
             {
                 Platforms.Add(aabb);
@@ -172,7 +192,7 @@ namespace Powers
             }
 
             //if regular building, go through process of possibly spawning hazards or springs
-            if(platformType == 0)
+            if(platformType == 0 && !firstPlatform)
             {
                 //see if a hazard or spring will be added:
                 int specialObjectChance = Random.Range(0, 12);
@@ -193,29 +213,32 @@ namespace Powers
                 }
             }
 
-            //possible spawn powerup
-
             //see if a powerup will be added:
             int powerupObjectChance = Random.Range(0, 7);
-            if (powerupObjectChance <= 1)
+            if (powerupObjectChance <= 1 && !firstPlatform)
             {
                 if(powerupObjectChance == 0)
                 {
-                    //spawn slow time powerup
-                    newPlatform = Instantiate(shieldObject, new Vector3(pos.x + Random.Range(-1.75f, 1.75f), pos.y + Random.Range(5.5f, 8.5f), pos.z), Quaternion.identity);
+                    //spawn slow time powerup and add to collection
+                    if (platformType == 0) newPlatform = Instantiate(shieldObject, new Vector3(pos.x + Random.Range(-1.75f, 1.75f), pos.y + Random.Range(5.5f, 8.5f), pos.z), Quaternion.identity);
+                    else newPlatform = Instantiate(shieldObject, new Vector3(pos.x + Random.Range(-1.25f, 1.25f), pos.y + Random.Range(3f, 5f), pos.z), Quaternion.identity);
                     aabb = newPlatform.GetComponent<AABB>();
                     Shields.Add(aabb);
                     aabb.Recalc();
                 }
                 else
                 {
-                    //spawn shield powerup
-                    newPlatform = Instantiate(slowTimeObject, new Vector3(pos.x + (Random.Range(-1.75f, 1.75f)), pos.y + Random.Range(5.5f, 8.5f), pos.z), Quaternion.identity);
+                    //spawn shield powerup and add to collection
+                    if (platformType == 0) newPlatform = Instantiate(slowTimeObject, new Vector3(pos.x + (Random.Range(-1.75f, 1.75f)), pos.y + Random.Range(5.5f, 8.5f), pos.z), Quaternion.identity);
+                    else newPlatform = Instantiate(slowTimeObject, new Vector3(pos.x + Random.Range(-1.25f, 1.25f), pos.y + Random.Range(3f, 5f), pos.z), Quaternion.identity);
                     aabb = newPlatform.GetComponent<AABB>();
                     SlowTimes.Add(aabb);
                     aabb.Recalc();
                 }
             }
+
+            //deactivate first platform var so powerups and hazards can spawn
+            firstPlatform = false;
         }
 
         void CheckCollisons()
@@ -236,84 +259,107 @@ namespace Powers
             //if player has not collided at all, player is not grounded
             if (!collide) playerMove.isGrounded = false;
 
-            // check player AABB against every hazard AABB:
-            foreach (AABB hazard in Hazards)
+            // check player AABB against edge bounds:
+            foreach (AABB edge in Edges)
             {
+                //if player collides, stop them
+                if (player.CollidesWith(edge))
+                {
+                    Vector3 fix = player.FindFix(edge);
+                    player.BroadcastMessage("ApplyFix", fix);
+                    collide = true;
+                }
+            }
+
+            // check if player AABB has fallen out of bounds
+            foreach (AABB bottom in Bottom)
+            {
+                //if player collides, stop them
+                if (player.CollidesWith(bottom))
+                {
+                    playerMove.isDead = true;
+                }
+            }
+
+            // check player AABB against every hazard AABB:
+            for (int i = Hazards.Count - 1; i >= 0; i--)
+            {
+                AABB hazard = Hazards[i];
+
                 //if player collides, they are dead
                 if (player.CollidesWith(hazard))
                 {
-                    Vector3 fix = player.FindFix(hazard);
-                    player.BroadcastMessage("ApplyFix", fix);
 
                     //check to see if player has shield powerup. if so, deactivate it. if not, end game.
-                    if(playerMove.shieldPowerup == true) playerMove.shieldPowerup = false;
+                    if (playerMove.shieldPowerup == true) playerMove.shieldPowerup = false;
                     else if (playerMove.shieldPowerup == false)
                     {
                         playerMove.isDead = true;
 
                         //play sfx:
                         audioPlayer.PlayOneShot(gameOverSFX, 1f);
-
-                        //activate game over UI:
-                        gameOverUI.SetActive(true);
-                        gameOverScore.text = "You earned" + playerScore + "points!";
                     }
 
-                    Hazards.Remove(hazard);
-                    Destroy(hazard);
+                    Hazards.RemoveAt(i);
+                    Destroy(hazard.gameObject);
                 }
+
             }
 
             // check player AABB against every spring AABB:
-            foreach (AABB spring in Springs)
+            for (int i = Springs.Count - 1; i >= 0; i--)
             {
+                AABB spring = Springs[i];
+
                 //if player collides, they will bounce
                 if (player.CollidesWith(spring))
                 {
                     Vector3 fix = player.FindFix(spring);
                     player.BroadcastMessage("ApplyFix", fix);
-                    
-                    //do thing. make player bounce.
+
+                    //bounce player
+                    playerMove.hitSpring = true;
+
+                    Springs.RemoveAt(i);
+                    Destroy(spring.gameObject);
                 }
             }
 
             // check player AABB against every slow time AABB:
-            foreach (AABB slowTime in SlowTimes)
+            for (int i = SlowTimes.Count - 1; i >= 0; i--)
             {
-                //if player collides, they are dead
+                AABB slowTime = SlowTimes[i];
+
+                //if player collides, activate time slow powerup
                 if (player.CollidesWith(slowTime))
                 {
-                    Vector3 fix = player.FindFix(slowTime);
-                    player.BroadcastMessage("ApplyFix", fix);
-
                     //set slow time:
-                    playerMove.slowTimePowerup = 600;
+                    playerMove.slowTimePowerup = 300;
 
                     //play sfx:
-                    audioPlayer.PlayOneShot(powerupSFX, 1f);
+                    audioPlayer.PlayOneShot(powerupSFX, 0.75f);
 
-                    SlowTimes.Remove(slowTime);
-                    Destroy(slowTime);
+                    SlowTimes.RemoveAt(i);
+                    Destroy(slowTime.gameObject);
                 }
             }
 
             // check player AABB against every shield AABB:
-            foreach (AABB shield in Shields)
+            for (int i = Shields.Count - 1; i >= 0; i--)
             {
-                //if player collides, they are dead
+                AABB shield = Shields[i];
+
+                //if player collides, activate time slow powerup
                 if (player.CollidesWith(shield))
                 {
-                    Vector3 fix = player.FindFix(shield);
-                    player.BroadcastMessage("ApplyFix", fix);
-
                     //active shield powerup:
                     playerMove.shieldPowerup = true;
 
                     //play sfx:
-                    audioPlayer.PlayOneShot(powerupSFX, 1f);
+                    audioPlayer.PlayOneShot(powerupSFX, 0.75f);
 
-                    Shields.Remove(shield);
-                    Destroy(shield);
+                    Shields.RemoveAt(i);
+                    Destroy(shield.gameObject);
                 }
             }
         }

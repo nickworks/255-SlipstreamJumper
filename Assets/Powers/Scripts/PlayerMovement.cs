@@ -25,7 +25,7 @@ namespace Powers
         public bool hasJumped = false;
         //this controls whether or not the player has the float power enabled
         [HideInInspector]
-        public bool floatPowerEnabled = false;
+        public bool hitSpring = false;
         //The current velocity of the player (m/s)
         Vector3 velocity = new Vector3();
 
@@ -33,6 +33,9 @@ namespace Powers
         //detects if the player has a slow time powerup
         [HideInInspector]
         public int slowTimePowerup = 0;
+        //this is used to multiply the speed once the slow time powerup starts
+        [HideInInspector]
+        public float slowTimeMultiplier = 1;
         //detects if has a shield powerup
         [HideInInspector]
         public bool shieldPowerup = false;
@@ -42,6 +45,7 @@ namespace Powers
         [Space(10)]
         //used to play the jump sfx:
         public AudioSource audioPlayer;
+        public AudioSource musicPlayer;
         public AudioClip jumpSFX;
 
         private AABB playerAABB;
@@ -72,12 +76,29 @@ namespace Powers
 
         private void FixedUpdate()
         {
-            if (slowTimePowerup != 0)
+            //only do the fixed update actions if the player is not dead
+            if (!isDead)
             {
-                Time.timeScale = 0.5f;
-                slowTimePowerup--;
+                //if slow time powerup obtained or unobtained, change relevant variables
+                if (slowTimePowerup != 0)
+                {
+                    if (Time.timeScale >= 0.5)
+                    {
+                        Time.timeScale -= 0.01f;
+                        musicPlayer.pitch -= 0.01f;
+                        audioPlayer.pitch -= 0.01f;
+                        slowTimeMultiplier += 0.02f;
+                    }
+                    slowTimePowerup--;
+                }
+                else if (slowTimePowerup == 0 && Time.timeScale <= 1)
+                {
+                    Time.timeScale += 0.01f;
+                    musicPlayer.pitch += 0.01f;
+                    audioPlayer.pitch += 0.01f;
+                    slowTimeMultiplier -= 0.02f;
+                }
             }
-            else Time.timeScale = 1;
         }
 
         private void DoPhysicsHorizontal()
@@ -85,29 +106,27 @@ namespace Powers
             float h = Input.GetAxis("Horizontal");
 
             //if time is slowed down, double speed so player can move as normal
-            if (slowTimePowerup != 0) velocity.x = h * speed * 2;
-            else velocity.x = h * speed;
+            velocity.x = h * speed * slowTimeMultiplier;
         }
 
         private void DoPhysicsVertical()
         {   
             // jump was just pressed 
-            if (Input.GetButtonDown("Jump") && isGrounded || Input.GetButtonDown("Jump") && !isGrounded && !hasJumped || Input.GetButtonDown("Jump") && floatPowerEnabled)
+            if (Input.GetButtonDown("Jump") && isGrounded || Input.GetButtonDown("Jump") && !isGrounded && !hasJumped || hitSpring)
             {
                 //if time is slowed down, multiply by 2 to move normally
-                if (slowTimePowerup != 0) velocity.y = jumpImpulse * 2;
-                else velocity.y = jumpImpulse;
+                velocity.y = jumpImpulse;
 
                 //play sfx:
-                audioPlayer.PlayOneShot(jumpSFX, 1f);
+                audioPlayer.PlayOneShot(jumpSFX, 0.6f);
 
                 //set variables appropriately
+                hitSpring = false;
                 hasJumped = true;
                 isGrounded = false;
                 isGroundedPrev = false;
             }
             //add acceleration due to gravity if player is in air. if time is slowed, multiply by 2 to move normally
-            else if (slowTimePowerup != 0) velocity.y -= gravity * Time.deltaTime * 2;
             else velocity.y -= gravity * Time.deltaTime;
 
             //allow player to jump again once they landed on the ground
