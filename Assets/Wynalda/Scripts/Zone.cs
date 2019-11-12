@@ -143,7 +143,7 @@ namespace Wynalda
             float gapSize = Random.Range(gapSizeMin,gapSizeMax);
 
             //position of new chunk in scene
-            Vector3 pos = new Vector3(0, -4.2f, 0);
+            Vector3 pos = new Vector3(0, -4f, 0);
 
             //if there are more than zero chunks 
             if (chunks.Count > 0)
