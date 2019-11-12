@@ -1,6 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
+/// <summary>
+/// this script is used for everything concerning to the players movement!
+/// </summary>
+
 namespace Wynalda
 {
     [RequireComponent(typeof(AABB))]
@@ -9,7 +14,7 @@ namespace Wynalda
         /// <summary>
         /// Speed multiplier for horizontal movement.
         /// </summary>
-        public float speed = 15f;
+        public float speed = 7f;
 
         /// <summary>
         /// The acceleration due to gravity in meters per second square.
@@ -51,8 +56,10 @@ namespace Wynalda
         /// </summary>
         private Vector2 screenBounds;
 
+        //things that happen at the start of the game
         void Start()
         {
+            //sets up boundaries of the screen for clamping
             screenBounds = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, Camera.main.transform.position.z));
             objectWidth = transform.GetComponent<SpriteRenderer>().bounds.size.x /2;
         }
@@ -60,22 +67,27 @@ namespace Wynalda
         // Update is called once per frame
         void Update()
         {
+            //calling in the voids that need to be updated and checked!
             DoPhysicsVertical();
             DoPhysicsHortizontal();
             GameOver();
+            //print(speed); used for testing speed powerup!
             
             //add players velocity to the players position
             transform.position += velocity * Time.deltaTime;
 
-
-            //ClampToGroundPlane();
+            //is the player on the ground?
             isGrounded = false;
         }
 
+        //this LateUpdate function was added to clamp the player to the right side of the screen. the -2 makes it so it only clamps right, as i want the player to die if they go off the right!
         void LateUpdate()
         {
+            //view position
             Vector3 viewPos = transform.position;
-            viewPos.x = Mathf.Clamp(viewPos.x, (screenBounds.x + objectWidth) * - 1, screenBounds.x - objectWidth); //This clamps the player to the left and right side of the screen.
+            //This clamps the player to the right side of the screen.
+            viewPos.x = Mathf.Clamp(viewPos.x, (screenBounds.x + objectWidth) * - 2, screenBounds.x - objectWidth); 
+            //set position to view position.
             transform.position = viewPos;
         }
 
@@ -87,38 +99,27 @@ namespace Wynalda
         {
             if (transform.position.x < screenBounds.x * -1)
             {
+               //if player falls off screen he dies
                 Game.GameOver();
-               // print("GAME OVER!!!"); // USED TO PROVE THIS WORKS!
+              //  print("GAME OVER!!! XX"); // USED TO PROVE THIS WORKS!
             }
 
+            //if player falls off screen he dies
             if (transform.position.y < screenBounds.y * -1)
             {
                 Game.GameOver();
-                print("GAME OVER!!!"); // USED TO PROVE THIS WORKS!
+               // print("GAME OVER!!! YY"); // USED TO PROVE THIS WORKS!
             }
         }
 
-     /*   private void DoubleJump()
-        {
-            if()
-            {
-                
-        
-            }
-
-            else
-            {
-           
-            }
-        } */
-        
-
         /// <summary>
-        /// This handles the Horiztonal Physics of the game. The speed at which the player moves.
+        /// This handles the Horizontal physics of the game. Manages things such as movement speed.
         /// </summary>
         private void DoPhysicsHortizontal()
         {
+            //horiztonal controls
             float h = Input.GetAxis("Horizontal");
+            //horizontal speed
             velocity.x = h * speed;
            
         
@@ -129,10 +130,14 @@ namespace Wynalda
         /// </summary>
         private void DoPhysicsVertical()
         {
+            //if jump button is pressed when the player is grounded do the following
             if (Input.GetButtonDown("Jump") && isGrounded)
             {
+                //jump!
                 velocity.y = jumpImpulse;
+                //declares u are jumping
                 isJumping = true;
+                //allows u to double jump
                 doubleJumpAllowed = true;
                 
             }
@@ -142,11 +147,11 @@ namespace Wynalda
                 isJumping = false;
           
             }
+            //If jump is pressed while u can doublejump and are not on the ground you can jump again!
             if(Input.GetButtonDown("Jump") && doubleJumpAllowed && !isGrounded)
             {
                 velocity.y = jumpImpulse;
                 doubleJumpAllowed = false;
-               // isJumping = true; do i need this here?
             }
 
             //if past jump peak, cancel jump
@@ -176,6 +181,31 @@ namespace Wynalda
             //print($"launching upwards at a velocity of {upwardVel}"); // USED TO TEST IF MY VALUES I INTEND ARE BEING CORRECTLY USED!
             velocity.y = upwardVel;
         }
+
+        //Speed boost!
+        public void GoFast(float speedIncrease)
+        {
+            //calls the IEumerator which sets the players speed to 30 then back to 7.
+            StartCoroutine("SpeedBoost");
+        }
+        IEnumerator SpeedBoost()
+        {
+            //speed to 30.
+            speed = 30f;
+            //5 second timer.
+            yield return new WaitForSeconds(5.0f);
+            //speed back to 7.
+            speed = 7f;
+        }
+
+        //This void is called when the player collides with a hazard. It ends the game!
+        public void Death()
+        {
+            Game.GameOver();
+            //print("YOU DIED!"); used for testing
+        }
+
+
 
     }
 }

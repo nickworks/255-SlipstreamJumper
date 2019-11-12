@@ -21,19 +21,24 @@ namespace Wynalda
         /// <summary>
         /// The AABBs of all platforms in our scene
         /// </summary>
-        static public List<AABB> platforms = new List<AABB>();
+        public List<AABB> platforms = new List<AABB>();
         /// <summary>
         /// the AABBs of all springs in our scene
         /// </summary>
-        static public List<AABB> springs = new List<AABB>();
+        public List<AABB> springs = new List<AABB>();
         /// <summary>
-        /// the AABBs of all powerups in the scene
+        /// the AABBs of all powerups in our scene
         /// </summary>
-        static public List<AABB> powers = new List<AABB>();
+        public List<AABB> powers = new List<AABB>();
+        /// <summary>
+        /// the AABBS of all hazards in our scene
+        /// </summary>
+        public List<AABB> hazards = new List<AABB>();
         /// <summary>
         /// The chunks we are allowed to spawn
         /// </summary>
         public Chunk[] prefabChunks;
+
         
         //minimum amount of space between platforms
         public float gapSizeMin = 12;
@@ -110,6 +115,12 @@ namespace Wynalda
                     {
                         powers.Remove(power.GetComponent<AABB>());
                     }
+                    //Goodbye hazards!
+                    Hazard[] deadHazards = chunk.GetComponentsInChildren<Hazard>();
+                    foreach (Hazard hazard in deadHazards)
+                    {
+                        hazards.Remove(hazard.GetComponent<AABB>());
+                    }
               
                     //removing the gameObjects.
                     chunks.RemoveAt(i);
@@ -141,7 +152,7 @@ namespace Wynalda
             float gapSize = Random.Range(gapSizeMin,gapSizeMax);
 
             //position of new chunk in scene
-            Vector3 pos = new Vector3(0, -3 , 0);
+            Vector3 pos = new Vector3(0, -4.2f, 0);
 
             //if there are more than zero chunks 
             if (chunks.Count > 0)
@@ -178,7 +189,12 @@ namespace Wynalda
             {
                 powers.Add(u.GetComponent<AABB>());
             }
-            
+            //spawns in hazards and adds them to array.
+            Hazard[] newhazards = chunk.GetComponentsInChildren<Hazard>();  
+            foreach (Hazard h in newhazards)
+            {
+                hazards.Add(h.GetComponent<AABB>());
+            }
             
             
 
@@ -190,7 +206,6 @@ namespace Wynalda
             {
                 if (player.CollidesWith(platform))
                 {
-                    //collision!!!
                     Vector3 fix = player.FindFix(platform);
                     player.BroadcastMessage("ApplyFix", fix);
                     //print("Hi"); was used to test if this was working
@@ -205,7 +220,6 @@ namespace Wynalda
                 //check player AABB against every spring AABB:
                 if (player.CollidesWith(spring))
                 {
-                    //boing!!!
                     PlayerMovement mover = player.GetComponent<PlayerMovement>();
                     Spring s = spring.GetComponent<Spring>();
 
@@ -225,12 +239,30 @@ namespace Wynalda
             {
                 if (player.CollidesWith(power))
                 {
-                    //collision!!!
-                    Vector3 fix = player.FindFix(power);
-                    player.BroadcastMessage("ApplyFix", fix);
-                    //print("Hi"); was used to test if this was working
                     Power u = power.GetComponent<Power>();
+                    PlayerMovement mover = player.GetComponent<PlayerMovement>();
+                    if (mover != null)
+                    {
+                        mover.GoFast(u.speed);
+                        power.GetComponent<MeshRenderer>().enabled = false;
+                    }
 
+                   
+
+                }
+
+            }
+
+             foreach (AABB hazard in hazards)
+            {
+                if (player.CollidesWith(hazard))
+                {
+                    Hazard h = hazard.GetComponent<Hazard>();
+                    PlayerMovement mover = player.GetComponent<PlayerMovement>();
+                    if (mover != null)
+                    {
+                        mover.Death();            
+                    }
 
                 }
 
