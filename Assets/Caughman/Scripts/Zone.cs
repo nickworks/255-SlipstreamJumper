@@ -19,6 +19,10 @@ namespace Caughman
         /// </summary>
         public AABB player;
         /// <summary>
+        /// The current collection of Level Chunks in the scene
+        /// </summary>
+        List<Chunks> chunks = new List<Chunks>();
+        /// <summary>
         ///This is our array of platforms AABB
         /// </summary>
         List<AABB> platforms = new List<AABB>();
@@ -30,34 +34,21 @@ namespace Caughman
         /// This is our array of springs AABB
         /// </summary>
         List<AABB> springs = new List<AABB>();
+
         /// <summary>
-        /// This is our Prefab Platform object
+        /// Collection of available level chunks
         /// </summary>
-        public GameObject prefabPlatform;
-        /// <summary>
-        /// This is our Prefab Spike object
-        /// </summary>
-        public GameObject prefabSpike;
-        /// <summary>
-        /// This is our Prefab Spring object
-        /// </summary>
-        public GameObject prefabSpring;
+        public Chunks[] prefabChunks;
+
         /// <summary>
         /// Minimum gap in meters on the X axis between spawned objects
         /// </summary>
-        public float gapSizeMin = 2;
+        public float gapSizeMin = 4;
         /// <summary>
         /// Maximum gap in meters on the X axis between spawned objects
         /// </summary>
-        public float gapSizeMax = 10;
-        /// <summary>
-        /// Minimum platform size in meters
-        /// </summary>
-        public float platformSizeMin = 4;
-        /// <summary>
-        /// Maximum platform size in meters
-        /// </summary>
-        public float platformSizeMax = 10;
+        public float gapSizeMax = 7;
+
         /// <summary>
         /// Current health player has until Game Over
         /// </summary>
@@ -75,169 +66,100 @@ namespace Caughman
         void Update()
         {
             //if there are less than 5 platforms, spawn a platform
-            if (platforms.Count < 5)
+            if (chunks.Count < 5)
             {
-                SpawnPlatform();
+               SpawnChunk();
             }
-            //if there are less than 5 spikes, spawn a spike
-            if (spikes.Count < 5)
-            {
-                SpawnSpike();
-            }
-            //if there are less than 5 spring, spawn a spring
-            if (springs.Count < 5)
-            {
-                SpawnSpring();
-            }
-            RemoveOffscreenPlatforms();
-            RemoveOffscreenSpikes();
-            RemoveOffscreenSprings();
 
+            RemoveOffscreenChunks();
            if (health == 0) Game.GameOver();
 
         }//End Update
 
-        //Removes spikes that go off the left side of the screen
-        private void RemoveOffscreenSpikes()
+        //Removes level chunks that go off the left side of the screen
+        private void RemoveOffscreenChunks()
         {
-            //Point off camera where objects will despawn
+            //Point on screen where objects will despawn
             float limitX = -10;
 
-            for (int i = spikes.Count - 1; i >= 0; i--)
+            for (int i = chunks.Count - 1; i >= 0; i--)
             {
-                if (spikes[i].max.x < limitX)
+                if (chunks[i].rightEdge.position.x < limitX)
                 {
-                    AABB spike = spikes[i];
+                    Chunks chunk = chunks[i];
 
-                    spikes.RemoveAt(i);
-                    Destroy(spike.gameObject);
+                    // Remove references to the platform AABBs from the list.
+                    Platform[] deadPlatforms = chunk.GetComponentsInChildren<Platform>();
+                    foreach (Platform platform in deadPlatforms)
+                    {
+                        platforms.Remove(platform.GetComponent<AABB>());
+                    }
+
+                    // Remove references to the spring AABBs from the list.
+                    Springs[] deadSprings = chunk.GetComponentsInChildren<Springs>();
+                    foreach (Springs spring in deadSprings)
+                    {
+                        springs.Remove(spring.GetComponent<AABB>());
+                    }
+
+                    // Remove references to the spike AABBs from the list.
+                    Spikes[] deadSpikes = chunk.GetComponentsInChildren<Spikes>();
+                    foreach (Spikes spike in deadSpikes)
+                    {
+                        spikes.Remove(spike.GetComponent<AABB>());
+                    }
+
+
+                    chunks.RemoveAt(i); // Remove the chunk from the list.
+                    Destroy(chunk.gameObject); // Remove the chunk from the scene.
                 }
             }
         }
 
-            //Spawn New Spikes;
-        private void SpawnSpike()
+        /// <summary>
+        /// Instantiates a new chunk and adds the AABBs of child objects to lists.
+        /// </summary>
+        private void SpawnChunk()
         {
-
-            // The gap between spawned spikes in a random range of gapSizeMin and gapSizeMax
             float gapSize = Random.Range(gapSizeMin, gapSizeMax);
-            float spikeGap = Random.Range(3, 5);
-            //the position of the spikes spawned
+
             Vector3 pos = new Vector3();
 
-            if (spikes.Count > 0)
+            if (chunks.Count > 0)
             {
-                AABB lastSpike = spikes[spikes.Count - 1];
-                pos.x = lastSpike.max.x + gapSize+ spikeGap;
-                pos.y = Random.Range(1, 3);
+                pos.x = chunks[chunks.Count - 1].rightEdge.position.x + gapSize;
+                pos.y = chunks[chunks.Count - 1].rightEdge.position.y;
+
             }
 
-            GameObject newSpike = Instantiate(prefabSpike, pos, Quaternion.identity);
-            newSpike.transform.localScale = new Vector3(1, 1, 1);
+            // Select a random prefab chunk from the array and add it to the list of instantiated chunks.
+            int index = Random.Range(0, prefabChunks.Length);
+            Chunks chunk = Instantiate(prefabChunks[index], pos, Quaternion.identity);
+            chunks.Add(chunk);
 
-            AABB aabb = newSpike.GetComponent<AABB>();
-            if (aabb)
+            // Add references to the platform AABBs to the list.
+            Platform[] newPlatforms = chunk.GetComponentsInChildren<Platform>();
+            foreach (Platform p in newPlatforms)
             {
-                spikes.Add(aabb);
-                aabb.Recalc();
+                platforms.Add(p.GetComponent<AABB>());
             }
+
+            // Add references to the spring AABBs to the list.
+            Springs[] newSprings = chunk.GetComponentsInChildren<Springs>();
+            foreach (Springs s in newSprings)
+            {
+                springs.Add(s.GetComponent<AABB>());
+            }
+
+            // Add references to the spike AABBs to the list.
+            Spikes[] newSpikes = chunk.GetComponentsInChildren<Spikes>();
+            foreach (Spikes sp in newSpikes)
+            {
+                spikes.Add(sp.GetComponent<AABB>());
+            }
+
         }
 
-
-
-            //Spawn New Springs;
-        private void SpawnSpring()
-        {
-
-            // The gap between spawned springs in a random range of gapSizeMin and gapSizeMax
-            float gapSize = Random.Range(gapSizeMin, gapSizeMax);
-            float springGap = Random.Range(3, 5);
-            //the position of the springs spawned
-            Vector3 pos = new Vector3();
-
-            if (springs.Count > 0)
-            {
-                AABB lastSpring = springs[springs.Count - 1];
-                pos.x = lastSpring.max.x + gapSize + springGap;
-                pos.y = Random.Range(-1, 3);
-            }
-
-            GameObject newSpring = Instantiate(prefabSpring, pos, Quaternion.identity);
-            newSpring.transform.localScale = new Vector3(2, .5f, 1);
-
-            AABB aabb = newSpring.GetComponent<AABB>();
-            if (aabb)
-            {
-                springs.Add(aabb);
-                aabb.Recalc();
-            }
-        }
-
-        //Removes springs that go off the left side of the screen
-        private void RemoveOffscreenSprings()
-        {
-            //Point off camera where objects will despawn
-            float limitX = -10;
-
-            for (int i = springs.Count - 1; i >= 0; i--)
-            {
-                if (springs[i].max.x < limitX)
-                {
-                    AABB spring = springs[i];
-
-                    springs.RemoveAt(i);
-                    Destroy(spring.gameObject);
-                }
-            }
-        }
-
-
-            //Spawn New Platforms;
-        private void SpawnPlatform()
-        {
-
-            // The gap between spawned platforms in a random range of gapSizeMin and gapSizeMax
-            float gapSize = Random.Range(gapSizeMin,gapSizeMax);
-            //the Width of the next spawned platform
-            float nextPlatformWidth = Random.Range(platformSizeMin,platformSizeMax);
-            //the position of the platform spawned
-            Vector3 pos = new Vector3();
-
-            if (platforms.Count > 0)
-            {
-                AABB lastPlatform = platforms[platforms.Count - 1];
-                pos.x = lastPlatform.max.x + gapSize + nextPlatformWidth/2;
-                pos.y = 0;
-            }
-
-            GameObject newPlatform = Instantiate(prefabPlatform, pos, Quaternion.identity);
-            newPlatform.transform.localScale = new Vector3(nextPlatformWidth, 1, 1);
-
-            AABB aabb = newPlatform.GetComponent<AABB>();
-            if (aabb)
-            {
-                platforms.Add(aabb);
-                aabb.Recalc();
-            }
-        }//End SpawnPlatform
-
-        //Removes platforms that go off the left side of the screen
-        private void RemoveOffscreenPlatforms()
-        {
-            //Point off camera where objects will despawn
-            float limitX = -10;
-
-            for (int i = platforms.Count -1; i >= 0; i--)
-            {
-                if (platforms[i].max.x < limitX)
-                {
-                    AABB platform = platforms[i];
-
-                    platforms.RemoveAt(i);
-                    Destroy(platform.gameObject);
-                }
-            }
-        }//End RemoveOffscreenPlatforms
 
         void LateUpdate()
         {
