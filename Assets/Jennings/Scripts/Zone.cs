@@ -20,18 +20,25 @@ namespace Jennings {
         /// <summary>
         /// AABBs of all platforms in scene
         /// </summary>
-        static public List<AABB> platforms = new List<AABB>();
+        List<AABB> platforms = new List<AABB>();
         /// <summary>
         /// AABBs of all springs
         /// </summary>
         List<AABB> springs = new List<AABB>();
 
         //GameObject prefabSpring;
-        //GameObject prefabPlatform;
+        public GameObject prefabPlatform;
 
-            /// <summary>
-            /// chunkcs we're allowed to spawn
-            /// </summary>
+        // public float delayBetweenPlatforms = 1; CAN DELETE
+
+        // float timerPlatforms = 0; CAN DELETE
+
+        public float gapSizeMin = 2;
+        public float gapSizeMax = 10;
+
+        /// <summary>
+        /// chunkcs we're allowed to spawn
+        /// </summary>
         public Chunk[] prefabChunks;
 
         void Awake()
@@ -84,6 +91,57 @@ namespace Jennings {
             */
         }
 
+        void Update()
+        {
+            // timerPlatforms -= Time.deltaTime; CAN DELETE WHEN TIMER PLATFORMS IS DELETED
+
+            if (platforms.Count < 5)
+            {
+                SpawnPlatform();
+            }
+
+            for(int i = platforms.Count - 1; i < platforms.Count; i--)
+            {
+                if (platforms[i].max.x < -13)
+                {
+                    AABB platform = platforms[i];
+
+                    platforms.RemoveAt(i);
+                    Destroy(platform.gameObject);
+                }
+            }
+        }
+
+        private void SpawnPlatform()
+        {
+            // Spawn new platforms:
+            // Vector3 places the given platform in a specified location, try using Random.Range(##.#f, ##.#f) instead of a number for some randomness
+
+            float gapSize = Random.Range(gapSizeMin, gapSizeMax);
+            float nextPlatformWidth = 10;
+
+            Vector3 pos = new Vector3();
+
+            if (platforms.Count > 0)
+            {
+                AABB lastPlatform = platforms[platforms.Count - 1];
+                pos.x = lastPlatform.max.x + gapSize + nextPlatformWidth/2;
+
+            }
+
+            GameObject newPlatform = Instantiate(prefabPlatform, pos, Quaternion.identity);
+            // Scale (for width) can't be changed via Instantiate (above) therefore this changes it immeditately after instantiation
+            newPlatform.transform.localScale = new Vector3(nextPlatformWidth, 1, 1);
+            //Original version relating to comment under Spawn New Platforms
+            //GameObject newPlatform = Instantiate(prefabPlatform, new Vector3(5, 0, 0), Quaternion.identity);
+
+            AABB aabb = newPlatform.GetComponent<AABB>();
+            if (aabb) {
+                platforms.Add(aabb);
+                aabb.Recalc();
+            }
+        }
+
         void LateUpdate() {
 
             // check player AABB against every platform AABB
@@ -112,7 +170,10 @@ namespace Jennings {
                     }
                 }
             }
+
             
+
+
         }
 
 
