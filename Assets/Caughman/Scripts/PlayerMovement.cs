@@ -26,17 +26,17 @@ namespace Caughman
         /// <summary>
         /// whether or not the player is currently standing on the ground.
         /// </summary>
-        bool isGrounded = false;
+        public bool isGrounded = false;
 
         /// <summary>
         /// Whether or not the player is moving upwards on a jump arc (and holding the jump button).
         /// </summary>
-        bool isJumping = false;
+        public bool isJumping = false;
 
         /// <summary>
         /// The current velocity of the player in meters per second.
         /// </summary>
-        Vector3 velocity = new Vector3();
+       public  Vector3 velocity = new Vector3();
 
 
 

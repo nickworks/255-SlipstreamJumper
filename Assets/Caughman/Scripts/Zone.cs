@@ -22,35 +22,46 @@ namespace Caughman
         ///This is our array of platforms AABB
         /// </summary>
         List<AABB> platforms = new List<AABB>();
-
+        /// <summary>
+        /// This is our array of spikes AABB
+        /// </summary>
+        List<AABB> spikes = new List<AABB>();
+        /// <summary>
+        /// This is our array of springs AABB
+        /// </summary>
+        List<AABB> springs = new List<AABB>();
         /// <summary>
         /// This is our Prefab Platform object
         /// </summary>
         public GameObject prefabPlatform;
         /// <summary>
-        /// 
+        /// This is our Prefab Spike object
+        /// </summary>
+        public GameObject prefabSpike;
+        /// <summary>
+        /// This is our Prefab Spring object
+        /// </summary>
+        public GameObject prefabSpring;
+        /// <summary>
+        /// Minimum gap in meters on the X axis between spawned objects
         /// </summary>
         public float gapSizeMin = 2;
         /// <summary>
-        /// 
+        /// Maximum gap in meters on the X axis between spawned objects
         /// </summary>
         public float gapSizeMax = 10;
         /// <summary>
-        /// 
+        /// Minimum platform size in meters
         /// </summary>
-        Camera camera;
+        public float platformSizeMin = 4;
         /// <summary>
-        /// 
+        /// Maximum platform size in meters
         /// </summary>
-        public float delayBetweenPlatforms = 1;
-        /// <summary>
-        /// 
-        /// </summary>
-        float timerPlatforms = 0;
+        public float platformSizeMax = 10;
+
 
         void Awake()
         { 
-            camera = GetComponent<Camera>();
         }//End Awake
 
         void Start()
@@ -59,53 +70,130 @@ namespace Caughman
 
         void Update()
         {
+            //if there are less than 5 platforms, spawn a platform
             if (platforms.Count < 5)
             {
                 SpawnPlatform();
             }
-
+            //if there are less than 5 spikes, spawn a spike
+            if (spikes.Count < 5)
+            {
+                SpawnSpike();
+            }
+            //if there are less than 5 spring, spawn a spring
+            if (springs.Count < 5)
+            {
+                SpawnSpring();
+            }
             RemoveOffscreenPlatforms();
+            RemoveOffscreenSpikes();
+            RemoveOffscreenSprings();
+
         }//End Update
 
-        private void RemoveOffscreenPlatforms()
+        //Removes spikes that go off the left side of the screen
+        private void RemoveOffscreenSpikes()
         {
+            //Point off camera where objects will despawn
+            float limitX = -10;
 
-            float limitX = FindScreenLeftX();
-
-            for (int i = platforms.Count; i >= 0; i--)
+            for (int i = spikes.Count - 1; i >= 0; i--)
             {
-                if (platforms[i].max.x < limitX)
+                if (spikes[i].max.x < limitX)
                 {
-                    AABB platform = platforms[i];
+                    AABB spike = spikes[i];
 
-                    platforms.RemoveAt(i);
-                    Destroy(platforms[i].gameObject);
+                    spikes.RemoveAt(i);
+                    Destroy(spike.gameObject);
                 }
             }
-        }//End RemoveOffscreenPlatforms
+        }
 
-        private float FindScreenLeftX()
+            //Spawn New Spikes;
+        private void SpawnSpike()
         {
-            Plane xy = new Plane(Vector3.forward, Vector3.zero);
-            Ray ray = camera.ScreenPointToRay(new Vector3(0, Screen.height / 2));
 
-            if (xy.Raycast(ray, out float dis))
+            // The gap between spawned spikes in a random range of gapSizeMin and gapSizeMax
+            float gapSize = Random.Range(gapSizeMin, gapSizeMax);
+            float spikeGap = Random.Range(3, 5);
+            //the position of the spikes spawned
+            Vector3 pos = new Vector3();
+
+            if (spikes.Count > 0)
             {
-                Vector3 pt = ray.GetPoint(dis);
-                return pt.x;
+                AABB lastSpike = spikes[spikes.Count - 1];
+                pos.x = lastSpike.max.x + gapSize+ spikeGap;
+                pos.y = Random.Range(1, 3);
             }
 
-            return -10;
-        }//End FindSCreenLeftX
+            GameObject newSpike = Instantiate(prefabSpike, pos, Quaternion.identity);
+            newSpike.transform.localScale = new Vector3(1, 1, 1);
 
+            AABB aabb = newSpike.GetComponent<AABB>();
+            if (aabb)
+            {
+                spikes.Add(aabb);
+                aabb.Recalc();
+            }
+        }
+
+
+
+            //Spawn New Springs;
+        private void SpawnSpring()
+        {
+
+            // The gap between spawned springs in a random range of gapSizeMin and gapSizeMax
+            float gapSize = Random.Range(gapSizeMin, gapSizeMax);
+            float springGap = Random.Range(3, 5);
+            //the position of the springs spawned
+            Vector3 pos = new Vector3();
+
+            if (springs.Count > 0)
+            {
+                AABB lastSpring = springs[springs.Count - 1];
+                pos.x = lastSpring.max.x + gapSize + springGap;
+                pos.y = Random.Range(-1, 3);
+            }
+
+            GameObject newSpring = Instantiate(prefabSpring, pos, Quaternion.identity);
+            newSpring.transform.localScale = new Vector3(1, 1, 1);
+
+            AABB aabb = newSpring.GetComponent<AABB>();
+            if (aabb)
+            {
+                springs.Add(aabb);
+                aabb.Recalc();
+            }
+        }
+
+        //Removes springs that go off the left side of the screen
+        private void RemoveOffscreenSprings()
+        {
+            //Point off camera where objects will despawn
+            float limitX = -10;
+
+            for (int i = springs.Count - 1; i >= 0; i--)
+            {
+                if (springs[i].max.x < limitX)
+                {
+                    AABB spring = springs[i];
+
+                    springs.RemoveAt(i);
+                    Destroy(spring.gameObject);
+                }
+            }
+        }
+
+
+            //Spawn New Platforms;
         private void SpawnPlatform()
         {
-            //Spawn New Platforms;
 
             // The gap between spawned platforms in a random range of gapSizeMin and gapSizeMax
             float gapSize = Random.Range(gapSizeMin,gapSizeMax);
             //the Width of the next spawned platform
-            float nextPlatformWidth = 10;
+            float nextPlatformWidth = Random.Range(platformSizeMin,platformSizeMax);
             //the position of the platform spawned
             Vector3 pos = new Vector3();
 
@@ -113,6 +201,7 @@ namespace Caughman
             {
                 AABB lastPlatform = platforms[platforms.Count - 1];
                 pos.x = lastPlatform.max.x + gapSize + nextPlatformWidth/2;
+                pos.y = 0;
             }
 
             GameObject newPlatform = Instantiate(prefabPlatform, pos, Quaternion.identity);
@@ -126,6 +215,24 @@ namespace Caughman
             }
         }//End SpawnPlatform
 
+        //Removes platforms that go off the left side of the screen
+        private void RemoveOffscreenPlatforms()
+        {
+            //Point off camera where objects will despawn
+            float limitX = -10;
+
+            for (int i = platforms.Count -1; i >= 0; i--)
+            {
+                if (platforms[i].max.x < limitX)
+                {
+                    AABB platform = platforms[i];
+
+                    platforms.RemoveAt(i);
+                    Destroy(platform.gameObject);
+                }
+            }
+        }//End RemoveOffscreenPlatforms
+
         void LateUpdate()
         {
          foreach(AABB platform in platforms)
@@ -138,6 +245,29 @@ namespace Caughman
                     player.BroadcastMessage("ApplyFix", fix);
                 }
             }
+
+            foreach (AABB spring in springs)
+            {
+                //Check Player AABB against every spring AABB:
+                if (player.CollidesWith(spring))
+                {
+                    //There is a collision!
+                    Vector3 fix = player.FindFix(spring);
+                    player.BroadcastMessage("ApplyFix", fix);
+                }
+            }
+
+            foreach (AABB spike in spikes)
+            {
+                //Check Player AABB against every spike AABB:
+                if (player.CollidesWith(spike))
+                {
+                    //There is a collision!
+                    Vector3 fix = player.FindFix(spike);
+                    player.BroadcastMessage("ApplyFix", fix);
+                }
+            }
+
         }//End LateUpdate
 
     }

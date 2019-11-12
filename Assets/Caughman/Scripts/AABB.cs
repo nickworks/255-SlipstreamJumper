@@ -8,21 +8,25 @@ namespace Caughman
     {
 
         public Vector3 size;
-
+        /// <summary>
+        /// Either the left most side on the x axis or the lowest most side on the y axis
+        /// </summary>
         public Vector3 min { get; private set; }
+        /// <summary>
+        /// Either the right most side on the x axis or the highest most side on the y axis
+        /// </summary>
         public Vector3 max { get; private set; }
 
-        // Start is called before the first frame update
         void Start()
         {
 
-        }
+        }//End Start
 
-        // Update is called once per frame
+
         void Update()
         {
             Recalc();
-        }
+        }//End Update
 
         
         /// <summary>
@@ -86,7 +90,7 @@ namespace Caughman
 
             min = transform.position - halfSize;
             max = transform.position + halfSize;
-        }
+        }//End Recalc
 
         public void ApplyFix(Vector3 fix)
         {
@@ -94,6 +98,10 @@ namespace Caughman
             Recalc();
 
         }//End ApplyFix
+
+
+
+
 
         private void OnDrawGizmos()
         {
