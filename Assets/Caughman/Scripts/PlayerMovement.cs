@@ -72,6 +72,8 @@ namespace Caughman
                 velocity.y = 0;
 
                 isGrounded = true;
+
+                
             }
             else
             {
