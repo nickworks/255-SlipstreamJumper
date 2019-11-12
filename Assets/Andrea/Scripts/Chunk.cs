@@ -8,6 +8,7 @@ namespace Andrea
     public class Chunk : MonoBehaviour
     {
         public Transform rightEdge;
+        public float edgeX;
         void Start()
         {
 
@@ -16,7 +17,7 @@ namespace Andrea
         // Update is called once per frame
         void Update()
         {
-
+            edgeX = rightEdge.position.x;
         }
     }
 }

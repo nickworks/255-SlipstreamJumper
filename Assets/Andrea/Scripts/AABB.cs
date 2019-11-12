@@ -7,9 +7,21 @@ namespace Andrea
     public class AABB : MonoBehaviour
     {
         public Vector3 size;
-        public enum currentType {passThough, powerUp, hazard};
+        /// <summary>
+        /// Used to differentiate platform types
+        /// </summary>
+        public enum CurrentType {PassThough, Solid}
 
+        public CurrentType currentType = CurrentType.Solid; //Platforms are impassable by default.
+
+        /// <summary>
+        /// Reference to the AABBs minimum coordinates.
+        /// </summary>
         public Vector3 Min { get; private set; }
+
+        /// <summary>
+        /// Reference to the AABBs maximum coordinates.
+        /// </summary>
         public Vector3 Max { get; private set; }
 
         void Start()
@@ -21,12 +33,6 @@ namespace Andrea
         {
             Recalc();
         }
-
-
-        //void LateUpdate()
-        //{
-            //Recalc();
-        //}
 
         /// <summary>
         /// This function returns whether or not the AABB object is colliding with another.
