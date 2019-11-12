@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor.SceneManagement;
 
 namespace Breu
 {
@@ -25,6 +26,12 @@ namespace Breu
         public float Gravity = 30;
 
         /// <summary>
+        /// Determines the amount of time that the pickup lasts
+        /// </summary>
+        public float PickUpTimer = 30;
+        float PickUpTimeRemaining;
+
+        /// <summary>
         /// determines acceleration due to groundpound
         /// </summary>
         public float groundPoundSpeed = 100;
@@ -32,7 +39,7 @@ namespace Breu
         /// <summary>
         /// determines if player is groundpounding
         /// </summary>
-        bool isGroundPounding = false;
+        public static bool  isGroundPounding = false;
 
         /// <summary>
         /// determines if the player is standing on the "ground"
@@ -43,62 +50,65 @@ namespace Breu
         /// determines if the player is moving upwards during a jump
         /// </summary>
         bool isJumping = false;
-
+        
         /// <summary>
         /// Current velocity of the player, meters per seconds (m/s)
         /// </summary>
         Vector3 PlayerVelocity = new Vector3();
 
-
-
-        // Start is called before the first frame update
+        private Vector2 ScreeBounds;
+        
         void Start()
         {
-
+            PickUpTimeRemaining = 0;
+            ScreeBounds = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, Camera.main.transform.position.z));
         }
 
-        // Update is called once per frame
         void Update()
         {
-            DoPhysicsVertical();
+            DoPhysicsVertical();//determines Vertical movement
 
-            DoPhysicsHorizontal();
+            DoPhysicsHorizontal();//determines horizontal movement
+            
+            transform.position += PlayerVelocity * Time.deltaTime;//add velocity to position
 
-            //add velocity to position
-            transform.position += PlayerVelocity * Time.deltaTime;
+            ClampToRightPlane();
 
-            //ClampToGroundPlane();
-            isGrounded = false;
+            isGrounded = false;//assumes player is not on gorund
 
+            if (PickUpTimeRemaining > 0)
+            {
+                isGrounded = true;
+                PickUpTimeRemaining -= Time.deltaTime;
+            }    
         }
 
         private void DoPhysicsHorizontal()
         {
-            float h = Input.GetAxis("Horizontal");
-            PlayerVelocity.x = h * HoriSpeed;
+            float h = Input.GetAxis("Horizontal");//get if player is pressing left/right on an axis between -1 & 1
+            PlayerVelocity.x = h * HoriSpeed;//movs player left/right according to Horispeed
         }
 
         private void DoPhysicsVertical()
         {
-            //if player presses groundpound button player "groundpounds" until they hit ground
-            if (Input.GetButtonDown("Fire3") && isGrounded == false)
+            //if player presses groundpound button player "ground-pounds" until they hit ground
+            if (Input.GetButtonDown("Fire3"))
             {
-                isGroundPounding = true;
+                isGroundPounding = true;                
             }
-            else if (isGrounded == true)
-            {
-                isGroundPounding = false;
-            }
-            //add acceleration for groundpound
-            float groundPoundMult = 1;
-            //groundpound button pressed
+
+            //acceleration multiplier for ground-pound
+            float groundPoundMult = 1;//defaults to 1 for no change
+
+            //ground-pound button pressed
             if (isGroundPounding == true)
             {
-                groundPoundMult = groundPoundSpeed;
+                groundPoundMult = groundPoundSpeed;//change groundpoundmult to speed set in editor
+                PlayerVelocity.x = 0;//keeps player from moving left/right when ground pounding. should be move to horizontal physics
             }
             else
             {
-                groundPoundMult = 1;
+                groundPoundMult = 1;//reset groundpoundmult
             }
 
             //jump button pressed
@@ -129,39 +139,58 @@ namespace Breu
             
         }
 
-        private void ClampToGroundPlane()
+        /// <summary>
+        /// keep the player from going off screen to the right.
+        /// </summary>
+        private void ClampToRightPlane()
         {
-            //clamp to ground plane: (y=0)
-            if (transform.position.y < 0)
-            {
                 Vector3 pos = transform.position;
-                pos.y = 0;
+                pos.x = Mathf.Clamp(pos.x, ScreeBounds.x * -2, ScreeBounds.x);
                 transform.position = pos;
 
-                PlayerVelocity.y = 0;
-
-                isGrounded = true;
-            }
-            else
-            {
-                isGrounded = false;
-            }
+                PlayerVelocity.x = 0;
         }
 
+
+        /// <summary>
+        /// moves player out of platforms determine by "fix" vector3
+        /// </summary>
+        /// <param name="fix"></param>
         public void applyFix(Vector3 fix)
         {
-            if(fix.x != 0)
+            if(fix.x != 0)//stop player from gaing infinite left/right velocity
             {
                 PlayerVelocity.x = 0;
             }
-            if (fix.y != 0 && PlayerVelocity.y < 0)
+            if (fix.y != 0 && PlayerVelocity.y < 0)//stops player from gaining infinite up/down velocity
             {
                 PlayerVelocity.y = 0;
             }
-            if (fix.y > 0)
+            if (fix.y > 0)//set isgrounded to true if the player is placed ontop of a platform
             {
                 isGrounded = true;
+                isGroundPounding = false;
             }
         }
+
+        /// <summary>
+        /// called when player collides with a spring
+        /// </summary>
+        /// <param name="yVelocity"></param>
+        public void launchUpwards(float yVelocity)
+        {
+            
+            PlayerVelocity.y = yVelocity;//set players up/down velocity 
+            isGroundPounding = false;//cancels ground-pound
+        }
+        
+        /// <summary>
+        /// sets the amount of time the player can use the pickup
+        /// </summary>
+        public void PickUpGet()
+        {
+            PickUpTimeRemaining = PickUpTimer;
+        }
+
     }
 }
