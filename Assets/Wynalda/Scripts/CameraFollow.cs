@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+/// <summary>
+/// This script is to create a more "realistic" camera experience.
+/// </summary>
 namespace Wynalda
 {
     public class CameraFollow : MonoBehaviour

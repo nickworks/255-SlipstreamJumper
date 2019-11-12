@@ -7,7 +7,7 @@ namespace Wynalda
     public class Zone : Pattison.Zone {
 
         new static public ZoneInfo info = new ZoneInfo() {
-            zoneName = "40 Yard Dash",
+            zoneName = "Penguin Hops",
             creator = "Wynalda",
             level = "WynaldaScene"
         };
@@ -26,6 +26,10 @@ namespace Wynalda
         /// the AABBs of all springs in our scene
         /// </summary>
         static public List<AABB> springs = new List<AABB>();
+        /// <summary>
+        /// the AABBs of all powerups in the scene
+        /// </summary>
+        static public List<AABB> powers = new List<AABB>();
         /// <summary>
         /// The chunks we are allowed to spawn
         /// </summary>
@@ -53,7 +57,7 @@ namespace Wynalda
 
         void Update()
         {
-            if (chunks.Count < 2)
+            if (chunks.Count < 3)
             {
                 SpawnChunk();
             }
@@ -81,6 +85,13 @@ namespace Wynalda
                     {
                         springs.Remove(spring.GetComponent<AABB>());
                     }
+                    Power[] deadPowers = chunk.GetComponentsInChildren<Power>();
+                    foreach (Power power in deadPowers)
+                    {
+                        powers.Remove(power.GetComponent<AABB>());
+                    }
+              
+                    
 
 
                     chunks.RemoveAt(i);
@@ -139,6 +150,14 @@ namespace Wynalda
             {
                 springs.Add(s.GetComponent<AABB>());
             }
+            Power[] newpowers = chunk.GetComponentsInChildren<Power>();
+            foreach (Power u in newpowers)
+            {
+                powers.Add(u.GetComponent<AABB>());
+            }
+            
+            
+            
 
         }
 
@@ -170,12 +189,30 @@ namespace Wynalda
 
                     if (mover != null)
                     {
-                        print($"springiness is {s.springiness}");
+                       // print($"springiness is {s.springiness}"); USED FOR TESTING!
                         mover.LaunchUpwards(s.springiness);
                     }
                 }
             }
-                   
+
+
+
+            //check player AABB against every powerup AABB:
+            foreach (AABB power in platforms)
+            {
+                if (player.CollidesWith(power))
+                {
+                    //collision!!!
+                    Vector3 fix = player.FindFix(power);
+                    player.BroadcastMessage("ApplyFix", fix);
+                    //print("Hi"); was used to test if this was working
+                    Power u = power.GetComponent<Power>();
+
+
+                }
+
+            }
+
         } // end LateUpdate()
 
 

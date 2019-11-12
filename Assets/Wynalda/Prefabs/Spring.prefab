@@ -106,4 +106,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 904370e1647437b489d6d328ec3f3451, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  springiness: 15
+  springiness: 10
