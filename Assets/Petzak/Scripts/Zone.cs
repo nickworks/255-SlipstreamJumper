@@ -138,6 +138,11 @@ namespace Petzak
         /// </summary>
         private void SpawnChunk()
         {
+
+            float gapSizeMin = 1;
+            float gapSizeMax = 2;
+
+
             float gapSize = Random.Range(gapSizeMin, gapSizeMax);
             Vector3 pos = new Vector3(-5, -3, 0);
 

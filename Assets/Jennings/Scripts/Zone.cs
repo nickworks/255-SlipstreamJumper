@@ -41,7 +41,7 @@ namespace Jennings {
 
         void Start() {
 
-
+            /*
             GameObject spring = Instantiate(prefabSpring, pos + Vector3.up, Quaternion.identity, newPlatform.transform);
             AABB aabb2 = spring.GetComponent<AABB>();
             if (aabb2)
@@ -49,11 +49,12 @@ namespace Jennings {
                 springs.Add(aabb2);
                 aabb2.Recalc();
             }
-
+            */
         }
 
         private void SpawnChunk()
         {
+            /*
             float gapSize = Random.Range(gapSizeMin, gapSizeMax);
 
             Vector3 pos = new Vector3();
@@ -65,11 +66,12 @@ namespace Jennings {
             }
 
             int Index // continue this!
-
+            */
         }
 
         private void RemoveOffscreenChunks()
         {
+            /*
             float limitX = FindScreenLeftX();
 
             for(int i = chunks.Count - 1; i >= 0, i--)
@@ -79,6 +81,7 @@ namespace Jennings {
                 chunks.RemoveAt(i);
                 Destroy(platform.gameObject);
             }
+            */
         }
 
         void LateUpdate() {
