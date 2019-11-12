@@ -9,7 +9,7 @@ namespace Wynalda
         /// <summary>
         /// Speed multiplier for horizontal movement.
         /// </summary>
-        public float speed = 5f;
+        public float speed = 15f;
 
         /// <summary>
         /// The acceleration due to gravity in meters per second square.
@@ -22,14 +22,19 @@ namespace Wynalda
         public float jumpImpulse = 5f;
 
         /// <summary>
-        /// Wether or not the player is currently standing on the ground.
+        /// Whether or not the player is currently standing on the ground.
         /// </summary>
         bool isGrounded = false;
 
         /// <summary>
-        /// Wether or not the player is moving upwards on a jump arc (and holding the jump button)
+        /// Whether or not the player is moving upwards on a jump arc (and holding the jump button)
         /// </summary>
         bool isJumping = false;
+
+        /// <summary>
+        /// Whether or not the player is allowed to perform a double jump.
+        /// </summary>
+        bool doubleJumpAllowed = false; 
 
         /// <summary>
         /// The current velocity of the player, measured in meters per second.
@@ -46,6 +51,7 @@ namespace Wynalda
         {
             DoPhysicsVertical();
             DoPhysicsHortizontal();
+            
             //add players velocity to the players position
             transform.position += velocity * Time.deltaTime;
 
@@ -74,10 +80,27 @@ namespace Wynalda
             }
         }
 
+         private void DoubleJump()
+        {
+            if(doubleJumpAllowed == true)
+            {
+                
+                isJumping = true;
+                isGrounded = false;
+            }
+
+            else
+            {
+                doubleJumpAllowed = false;
+                DoPhysicsVertical();
+            }
+        } 
+
         private void DoPhysicsHortizontal()
         {
             float h = Input.GetAxis("Horizontal");
             velocity.x = h * speed;
+           
         }
 
         private void DoPhysicsVertical()
@@ -86,11 +109,15 @@ namespace Wynalda
             {
                 velocity.y = jumpImpulse;
                 isJumping = true;
+                doubleJumpAllowed = true;           
+                
             }
             //if not holding jump, cancel jump
-            if (!Input.GetButton("Jump"))
+            if (!Input.GetButton("Jump") && doubleJumpAllowed)
             {
-                isJumping = false;
+                DoubleJump();
+                doubleJumpAllowed = false;
+          
             }
             //if past jump peak, cancel jump
             if (velocity.y < 0) isJumping = false;
@@ -104,7 +131,7 @@ namespace Wynalda
             if (fix.x != 0) velocity.x = 0;
             if (fix.y > 0 && velocity.y < 0) velocity.y = 0;
             if (fix.y < 0 && velocity.y > 0) velocity.y = 0;
-            if (fix.y > 0) isGrounded = true;
+            if (fix.y > 0) isGrounded = true; 
         }
 
         public void LaunchUpwards(float upwardVel)

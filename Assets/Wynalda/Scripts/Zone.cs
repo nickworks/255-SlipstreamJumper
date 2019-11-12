@@ -32,9 +32,9 @@ namespace Wynalda
         public Chunk[] prefabChunks;
         
         //minimum amount of space between platforms
-        public float gapSizeMin = 2;
+        public float gapSizeMin = 12;
         //minimum amount of space between platforms
-        public float gapSizeMax = 10;
+        public float gapSizeMax = 20;
 
         Camera cam;
 
@@ -113,12 +113,6 @@ namespace Wynalda
 
             float gapSize = Random.Range(gapSizeMin,gapSizeMax);
 
-
-           // if (isStartingPlatform)
-           // {
-           //     nextPlatformWidth = 50;
-           // }
-
             Vector3 pos = new Vector3(0, -3 , 0);
 
             if (chunks.Count > 0)
@@ -128,12 +122,6 @@ namespace Wynalda
                 pos.y = chunks[chunks.Count - 1].rightEdge.position.y;
                 //  pos.y = -5;
             }
-
-            //  if (isStartingPlatform)
-            //  {
-            //     pos.y += -2;
-            //     nextPlatformHeight = 10;
-            //   }
 
             int index = Random.Range(0, prefabChunks.Length);
 

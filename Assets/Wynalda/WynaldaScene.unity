@@ -174,7 +174,7 @@ Camera:
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
-  orthographic: 0
+  orthographic: 1
   orthographic size: 5
   m_Depth: -1
   m_CullingMask:
@@ -199,7 +199,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 615584242}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalPosition: {x: -1.8, y: 1, z: -22.1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -218,7 +218,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 1868104144}
-  easing: 0.05
+  easing: 0.025
 --- !u!114 &615584247
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -234,6 +234,7 @@ MonoBehaviour:
   player: {fileID: 1868104140}
   prefabChunks:
   - {fileID: 4372010935928397074, guid: f0672f092f1bfbb47a33735b16b0e6ce, type: 3}
+  - {fileID: 6947629100365649926, guid: 89b781ed4e035c0468da12abf2d7191a, type: 3}
   gapSizeMin: 2
   gapSizeMax: 10
   textures:
@@ -341,9 +342,9 @@ GameObject:
   - component: {fileID: 1868104144}
   - component: {fileID: 1868104143}
   - component: {fileID: 1868104142}
-  - component: {fileID: 1868104141}
   - component: {fileID: 1868104140}
   - component: {fileID: 1868104145}
+  - component: {fileID: 1868104141}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -432,7 +433,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1868104139}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.84, y: 6.72, z: 0}
+  m_LocalPosition: {x: 4.78, y: 6.96, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -450,6 +451,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2841fa7bdbee020488aec236a1f3b4eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 5
-  gravity: 10
+  speed: 7
+  gravity: 12
   jumpImpulse: 5
