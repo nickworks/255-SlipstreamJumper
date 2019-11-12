@@ -72,7 +72,7 @@ namespace Jennings {
             return fix;
         }
 
-        void Recalc()
+        public void Recalc()
         {
             Vector3 halfSize = size / 2;
 
@@ -80,8 +80,8 @@ namespace Jennings {
             halfSize.y *= transform.localScale.y;
             halfSize.z *= transform.localScale.z;
 
-            min = transform.position - size / 2;
-            max = transform.position + size / 2;
+            min = transform.position - halfSize;
+            max = transform.position + halfSize;
 
 
         }
@@ -101,6 +101,7 @@ namespace Jennings {
         public void ApplyFix(Vector3 fix)
         {
             transform.position += fix;
+            Recalc();
 
         }
     }
