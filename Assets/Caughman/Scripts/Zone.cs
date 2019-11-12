@@ -58,7 +58,9 @@ namespace Caughman
         /// Maximum platform size in meters
         /// </summary>
         public float platformSizeMax = 10;
-
+        /// <summary>
+        /// Current health player has until Game Over
+        /// </summary>
         public float health = 3;
 
 
@@ -91,7 +93,7 @@ namespace Caughman
             RemoveOffscreenSpikes();
             RemoveOffscreenSprings();
 
-           if (health == 0) Game.gameOver();
+           if (health == 0) Game.GameOver();
 
         }//End Update
 
@@ -161,7 +163,7 @@ namespace Caughman
             }
 
             GameObject newSpring = Instantiate(prefabSpring, pos, Quaternion.identity);
-            newSpring.transform.localScale = new Vector3(1, 1, 1);
+            newSpring.transform.localScale = new Vector3(2, .5f, 1);
 
             AABB aabb = newSpring.GetComponent<AABB>();
             if (aabb)
@@ -258,6 +260,11 @@ namespace Caughman
                     //There is a collision!
                     Vector3 fix = player.FindFix(spring);
                     player.BroadcastMessage("ApplyFix", fix);
+
+                    PlayerMovement playerMovement = player.GetComponent<PlayerMovement>();
+
+                    playerMovement.SpringUp(15);
+
                 }
             }
 
@@ -266,13 +273,16 @@ namespace Caughman
                 //Check Player AABB against every spike AABB:
                 if (player.CollidesWith(spike))
                 {
+                    Vector3 fix = player.FindFix(spike);
+                    player.BroadcastMessage("ApplyFix", fix);
                     //There is a collision!
                     Debug.Log("Player loses 1 health "+ health);
+                    health--;
 
                     //TODO: move players position to pos.x-4 pos.y5
-                    //TODO: remove 1 health
-                    health--;
-                
+                    PlayerMovement playerMovement = player.GetComponent<PlayerMovement>();
+
+                    playerMovement.SpikeHit();
 
                 }
             }
