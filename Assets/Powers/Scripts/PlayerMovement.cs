@@ -101,6 +101,11 @@ namespace Powers
             }
         }
 
+        private void OnDestroy()
+        {
+            Time.timeScale = 1;
+        }
+
         private void DoPhysicsHorizontal()
         {
             float h = Input.GetAxis("Horizontal");
