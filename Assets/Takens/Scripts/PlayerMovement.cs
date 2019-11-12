@@ -69,7 +69,7 @@ namespace Takens
                 transform.position += velocity * Time.deltaTime;
 
                 //update display text
-                jumpsLeft.text = ("Double Jumps Left: " + doubleJumpsLeft);
+             //   jumpsLeft.text = ("Double Jumps Left: " + doubleJumpsLeft);
 
                 //ClampToGroundPlane();
                 isGrounded = false;
