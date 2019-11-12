@@ -28,17 +28,17 @@ namespace Takens {
         /// <summary>
         /// The current AABBs of all platforms in our scene.
         /// </summary>
-        static public List<AABB> platforms = new List<AABB>();
+        public List<AABB> platforms = new List<AABB>();
 
         /// <summary>
         /// The current AABBs of all springs in our scene.
         /// </summary>
-        static public List<AABB> springs = new List<AABB>();
+        public List<AABB> springs = new List<AABB>();
 
         /// <summary>
         /// The current AABBs of all powerUps in our scene.
         /// </summary>
-        static public List<AABB> powerUps = new List<AABB>();
+        public List<AABB> powerUps = new List<AABB>();
 
         /// <summary>
         /// Reference to player's PlayerMovement component
