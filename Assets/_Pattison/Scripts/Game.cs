@@ -56,6 +56,7 @@ public class Game : MonoBehaviour {
             Destroy(gameObject);
             return;
         }
+        SetPause(false);
         DontDestroyOnLoad(gameObject);
         main = this;
     }
@@ -63,8 +64,6 @@ public class Game : MonoBehaviour {
         
     }
     void Update() {
-
-        if (Input.GetKeyDown(KeyCode.Q)) Game.GameOver();
 
         if (Input.GetButtonDown("Pause")) TogglePause();
         if (isPaused) return;
