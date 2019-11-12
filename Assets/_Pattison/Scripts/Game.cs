@@ -7,10 +7,13 @@ public class Game : MonoBehaviour {
 
     public static Game main { get; private set; }
     public static bool isPaused { get; private set; }
+    public static bool isGameOver { get; private set; }
     static public ZoneInfo queuedZone;
 
     static public void GameOver() {
-        // TODO: show the "game over" screen
+        if (Game.main == null) return; // the game isn't running...
+        SceneManager.LoadScene("GameOver");
+
     }
     
 
@@ -60,6 +63,9 @@ public class Game : MonoBehaviour {
         
     }
     void Update() {
+
+        if (Input.GetKeyDown(KeyCode.Q)) Game.GameOver();
+
         if (Input.GetButtonDown("Pause")) TogglePause();
         if (isPaused) return;
 
