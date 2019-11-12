@@ -59,6 +59,8 @@ namespace Caughman
         /// </summary>
         public float platformSizeMax = 10;
 
+        public float health = 3;
+
 
         void Awake()
         { 
@@ -88,6 +90,8 @@ namespace Caughman
             RemoveOffscreenPlatforms();
             RemoveOffscreenSpikes();
             RemoveOffscreenSprings();
+
+           if (health == 0) Game.gameOver();
 
         }//End Update
 
@@ -263,8 +267,13 @@ namespace Caughman
                 if (player.CollidesWith(spike))
                 {
                     //There is a collision!
-                    Vector3 fix = player.FindFix(spike);
-                    player.BroadcastMessage("ApplyFix", fix);
+                    Debug.Log("Player loses 1 health "+ health);
+
+                    //TODO: move players position to pos.x-4 pos.y5
+                    //TODO: remove 1 health
+                    health--;
+                
+
                 }
             }
 
