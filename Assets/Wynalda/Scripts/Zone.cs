@@ -2,118 +2,242 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Wynalda {
+namespace Wynalda
+{
     public class Zone : Pattison.Zone {
 
         new static public ZoneInfo info = new ZoneInfo() {
-            zoneName = "The Water Temple",
-            creator = "Takens",
-            level = "TakensScene"
+            zoneName = "Penguin Hops",
+            creator = "Wynalda",
+            level = "WynaldaScene"
         };
 
-
+        //Player!
         public AABB player;
-        List<AABB> platforms = new List<AABB>();
+        /// <summary>
+        /// The current chunks in our scene
+        /// </summary>
+        List<Chunk> chunks = new List<Chunk>();
+        /// <summary>
+        /// The AABBs of all platforms in our scene
+        /// </summary>
+        static public List<AABB> platforms = new List<AABB>();
+        /// <summary>
+        /// the AABBs of all springs in our scene
+        /// </summary>
+        static public List<AABB> springs = new List<AABB>();
+        /// <summary>
+        /// the AABBs of all powerups in the scene
+        /// </summary>
+        static public List<AABB> powers = new List<AABB>();
+        /// <summary>
+        /// The chunks we are allowed to spawn
+        /// </summary>
+        public Chunk[] prefabChunks;
+        
+        //minimum amount of space between platforms
+        public float gapSizeMin = 12;
+        //minimum amount of space between platforms
+        public float gapSizeMax = 20;
 
-        public GameObject prefabPlatform;
+        //Camera!
+        Camera cam;
 
-        public float gapSizeMin = 2;
-        public float gapSizeMax = 10;
+        /// <summary>
+        /// Array of possible textures
+        /// </summary>
+        public Texture[] textures;
+        /// <summary>
+        /// Starting Texture
+        /// </summary>
+        public Texture startingTexture;
 
-        Camera camera;
-
+        /// <summary>
+        /// Awake!
+        /// </summary>
         void Awake()
         {
-            camera = GetComponent<Camera>();
+            cam = GetComponent<Camera>();
         }
-
+        
+        //Start!
         void Start() {
+            SpawnChunk(true);
             
         }
 
+        //Things that happen often!
         void Update()
         {
-            if (platforms.Count < 5)
+            //Less than 3 chunks? Spawn a new one!
+            if (chunks.Count < 3)
             {
-                SpawnPlatform();
+                SpawnChunk(); // Spawn chunk!
             }
 
-            RemoveOffscreenPlatforms();
+            //Goodbye chunks we cant see anymore!
+            RemoveOffScreenChunks();
         }
 
-        private void RemoveOffscreenPlatforms()
+        //Removes chunks that are off the screen to prevent memory leak!
+        private void RemoveOffScreenChunks()
         {
+            //Fine left of screen to determine where things should die off!
             float limitX = FindScreenLeftX();
-            //limitX = FindScreenLeftX();
-
-            for (int i = platforms.Count - 1; i >= 0; i--)
+            
+            //Removes dead offscreen chunks from arrays.
+            for (int i = chunks.Count - 1; i >= 0; i--)
             {
-                if (platforms[i].max.x < limitX)
+                if (chunks[i].rightEdge.position.x < limitX)
                 {
-                    AABB platform = platforms[i];
+                    Chunk chunk = chunks[i];
 
-                    platforms.RemoveAt(i);
-                    Destroy(platform.gameObject);
+                    //Goodbye platforms!
+                    Platform[] deadPlatforms = chunk.GetComponentsInChildren<Platform>();
+                    foreach(Platform platform in deadPlatforms)
+                    {
+                        platforms.Remove(platform.GetComponent<AABB>());
+                    }
+                    //Goodbye springs!
+                    Spring[] deadSprings = chunk.GetComponentsInChildren<Spring>();
+                    foreach (Spring spring in deadSprings)
+                    {
+                        springs.Remove(spring.GetComponent<AABB>());
+                    }
+                    //Goodbye powerups!
+                    Power[] deadPowers = chunk.GetComponentsInChildren<Power>();
+                    foreach (Power power in deadPowers)
+                    {
+                        powers.Remove(power.GetComponent<AABB>());
+                    }
+              
+                    //removing the gameObjects.
+                    chunks.RemoveAt(i);
+                    Destroy(chunk.gameObject);
                 }
             }
         }
 
+        //Finds left side of screen to determine where chunks should begin to be removed.
         private float FindScreenLeftX()
         {
             Plane xy = new Plane(Vector3.forward, Vector3.zero);
-            Ray ray = camera.ScreenPointToRay(new Vector3(0, Screen.height / 2));
-
-            //  Debug.DrawRay(ray.origin,ray.direction * 10, Color.yellow);
+            Ray ray = cam.ScreenPointToRay(new Vector3(0, Screen.height / 2));
 
             if (xy.Raycast(ray, out float dis))
             {
                 Vector3 pt = ray.GetPoint(dis);
-                // limitX = pt.x;
                 return pt.x;
             }
             else return -10;
 
-         //   return limitX;
         }
 
-        private void SpawnPlatform()
+        //spawn new chunks!
+        private void SpawnChunk(bool isStartingPlatform = false)
         {
-            //spawn new platforms:
-
+           
+            //random gap size:
             float gapSize = Random.Range(gapSizeMin,gapSizeMax);
-            float nextPlatformWidth = 10;
 
-            Vector3 pos = new Vector3();
+            //position of new chunk in scene
+            Vector3 pos = new Vector3(0, -3 , 0);
 
-            if (platforms.Count > 0)
+            //if there are more than zero chunks 
+            if (chunks.Count > 0)
             {
-                AABB lastPlatform = platforms[platforms.Count - 1];
-                pos.x = lastPlatform.max.x + gapSize + nextPlatformWidth/2;
+
+                pos.x = chunks[chunks.Count - 1].rightEdge.position.x + gapSize;
+                pos.y = chunks[chunks.Count - 1].rightEdge.position.y;
+                //  pos.y = -5;
             }
 
-            GameObject newPlatform = Instantiate(prefabPlatform, pos, Quaternion.identity);
-            newPlatform.transform.localScale = new Vector3(nextPlatformWidth, 1, 1);
+            //random chunk spawning
+            int index = Random.Range(0, prefabChunks.Length);
 
-            AABB aabb = newPlatform.GetComponent<AABB>();
-            if (aabb)
+            //chunks!
+            Chunk chunk = Instantiate(prefabChunks[index], pos, Quaternion.identity);
+            chunks.Add(chunk);
+
+            //spawns in platforms and adds them to array.
+            Platform[] newplatforms = chunk.GetComponentsInChildren<Platform>();
+            foreach(Platform p in newplatforms)
             {
-                platforms.Add(aabb);
-                aabb.Recalc();
+                platforms.Add(p.GetComponent<AABB>());
             }
+
+            //spawns in springs and adds them to array.
+            Spring[] newsprings = chunk.GetComponentsInChildren<Spring>();
+            foreach(Spring s in newsprings)
+            {
+                springs.Add(s.GetComponent<AABB>());
+            }
+            //spawns in powers and adds them to array.
+            Power[] newpowers = chunk.GetComponentsInChildren<Power>();
+            foreach (Power u in newpowers)
+            {
+                powers.Add(u.GetComponent<AABB>());
+            }
+            
+            
+            
+
         }
 
         void LateUpdate() {
             //check player AABB against every platform AABB:
-            foreach(AABB platform in platforms){
+            foreach (AABB platform in platforms)
+            {
                 if (player.CollidesWith(platform))
                 {
                     //collision!!!
                     Vector3 fix = player.FindFix(platform);
                     player.BroadcastMessage("ApplyFix", fix);
+                    //print("Hi"); was used to test if this was working
+
                 }
 
             }
-        }
 
-    }
-}
+            foreach (AABB spring in springs)
+            {
+
+                //check player AABB against every spring AABB:
+                if (player.CollidesWith(spring))
+                {
+                    //boing!!!
+                    PlayerMovement mover = player.GetComponent<PlayerMovement>();
+                    Spring s = spring.GetComponent<Spring>();
+
+
+                    if (mover != null)
+                    {
+                       // print($"springiness is {s.springiness}"); USED FOR TESTING!
+                        mover.LaunchUpwards(s.springiness);
+                    }
+                }
+            }
+
+
+
+            //check player AABB against every powerup AABB:
+            foreach (AABB power in powers)
+            {
+                if (player.CollidesWith(power))
+                {
+                    //collision!!!
+                    Vector3 fix = player.FindFix(power);
+                    player.BroadcastMessage("ApplyFix", fix);
+                    //print("Hi"); was used to test if this was working
+                    Power u = power.GetComponent<Power>();
+
+
+                }
+
+            }
+
+        } // end LateUpdate()
+
+
+    }// end class
+}// end namespace
