@@ -12,6 +12,7 @@ public class Game : MonoBehaviour {
 
     static public void GameOver() {
         if (Game.main == null) return; // the game isn't running...
+        Time.timeScale = 1;
         Destroy(Game.main.gameObject);
         SceneManager.LoadScene("GameOver");
     }
@@ -56,6 +57,7 @@ public class Game : MonoBehaviour {
             Destroy(gameObject);
             return;
         }
+        Time.timeScale = 1;
         SetPause(false);
         DontDestroyOnLoad(gameObject);
         main = this;
@@ -94,6 +96,7 @@ public class Game : MonoBehaviour {
         SceneManager.LoadScene(zone.level, LoadSceneMode.Single);
         currentZone = zone;
         RemoveCurrentFromZoneList();
+        prePauseTimescale = Time.timeScale = 1;
         print($"warped to \"{currentZone.level}\" ({zonesUnplayed.Count} left)");
     }
     private void RemoveCurrentFromZoneList() {
@@ -122,6 +125,7 @@ public class Game : MonoBehaviour {
         Time.timeScale = isPaused ? 0 : prePauseTimescale;
     }
     public void BackToMainMenu() {
+        prePauseTimescale = Time.timeScale = 1;
         SceneManager.LoadScene("MainMenu");
         Destroy(gameObject);
     }
