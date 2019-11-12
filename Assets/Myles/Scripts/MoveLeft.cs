@@ -9,7 +9,7 @@ namespace Myles
         /// <summary>
         /// How fast to move all MoveLeft objects to the left (in meters/second).
         /// </summary>
-        public static float speed = 5;
+        public static float speed = 7;
         
         void Start()
         {

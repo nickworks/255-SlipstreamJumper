@@ -56,6 +56,8 @@ namespace Myles {
             //ClampToGroundPlane();
             isGrounded = false;
 
+            
+
         }
 
         private void ClampToGroundPlane()
@@ -92,7 +94,7 @@ namespace Myles {
                 velocity.y = jumpImpulse;
                 isJumping = true;
             }
-            //if not holding jemp, cancel jum:
+            //if not holding jump, cancel jump:
             if (!Input.GetButton("Jump")) isJumping = false;
             // if past jump peak, cancel jump:
             if (velocity.y < 0) isJumping = false;
@@ -115,6 +117,8 @@ namespace Myles {
             if (fix.y != 0) velocity.y = 0;
             if (fix.y > 0) isGrounded = true;
         }
+
+        
 
     }
 }

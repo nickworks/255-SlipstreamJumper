@@ -6,19 +6,29 @@ namespace Myles {
     public class Zone : Pattison.Zone {
 
         new static public ZoneInfo info = new ZoneInfo() {
-            zoneName = "The Water Temple",
-            creator = "Student Lastname",
+            zoneName = "Square Dimension",
+            creator = "Danny Myles",
             level = "MylesScene"
         };
 
 
         public AABB player;        
         List<AABB> platforms = new List<AABB>();
-
+       
         public GameObject prefabPlatform;
+        
 
-        public float gapSizeMin = 2;
-        public float gapSizeMax = 10;
+        public float gapSizeMin = 5;
+        public float gapSizeMax = 15;
+        public float heightMin = -2;
+        public float heightMax = 5;
+        public float widthMin = 2;
+        public float widthMax = 10;
+
+
+
+
+
 
         Camera camera;
 
@@ -41,6 +51,7 @@ namespace Myles {
 
             RemoveOffscreenPlatforms();
 
+            
         }
 
         private void RemoveOffscreenPlatforms()
@@ -63,6 +74,8 @@ namespace Myles {
             }
         }
 
+        
+
         private float FindScreenLeftX()
         {
             Plane xy = new Plane(Vector3.forward, Vector3.zero);
@@ -83,8 +96,9 @@ namespace Myles {
             //spawn new platforms:
 
             float gapSize = Random.Range(gapSizeMin, gapSizeMax);
-            float nextPlatformWidth = 10;
-
+            float nextPlatformWidth = Random.Range(widthMin, widthMax);
+            float platformHeight = Random.Range(heightMin, heightMax);
+            
             Vector3 pos = new Vector3();
 
             if (platforms.Count > 0)
@@ -96,6 +110,8 @@ namespace Myles {
 
             GameObject newPlatform = Instantiate(prefabPlatform, pos, Quaternion.identity);
             newPlatform.transform.localScale = new Vector3(nextPlatformWidth, 1, 1);
+            newPlatform.transform.position = new Vector3(pos.x, platformHeight, 1);
+            
 
             AABB aabb = newPlatform.GetComponent<AABB>();
             if (aabb)
@@ -104,6 +120,8 @@ namespace Myles {
                 aabb.Recalc();
             }
         }
+
+        
 
         void LateUpdate()
         {
@@ -118,11 +136,8 @@ namespace Myles {
 
                 }
             }
-
-
-
+           
         }
-
-
+        
     }
 }
