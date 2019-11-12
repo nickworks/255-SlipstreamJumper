@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Caughman
 {
+    [RequireComponent(typeof(AABB))]
     public class PlayerMovement : MonoBehaviour
     {
         /// <summary>
@@ -25,17 +26,17 @@ namespace Caughman
         /// <summary>
         /// whether or not the player is currently standing on the ground.
         /// </summary>
-        bool isGrounded = false;
+        public bool isGrounded = false;
 
         /// <summary>
         /// Whether or not the player is moving upwards on a jump arc (and holding the jump button).
         /// </summary>
-        bool isJumping = false;
+        public bool isJumping = false;
 
         /// <summary>
         /// The current velocity of the player in meters per second.
         /// </summary>
-        Vector3 veloctiy = new Vector3();
+       public  Vector3 velocity = new Vector3();
 
 
 
@@ -46,27 +47,29 @@ namespace Caughman
         }
 
         // Update is called once per frame
-        void Update()
+        void LateUpdate()
         {
             DoPhysicsVertical();
             DoPhysicsHorizontal();
 
             //add velocity to position
-            transform.position += veloctiy * Time.deltaTime;
+            transform.position += velocity * Time.deltaTime;
 
             ClampToGroundPlane();
+            ClampToSide();
         }//end Update
 
         private void ClampToGroundPlane()
         {
             //clamp to ground plane: (y=0);
-            if (transform.position.y < 0)//player is below the ground:
+            if (transform.position.y < -5)//player is below the ground:
             {
                 Vector3 pos = transform.position;
-                pos.y = 0;
+                pos.y = 5;
+                pos.x = -4;
                 transform.position = pos;
 
-                veloctiy.y = 0;
+                velocity.y = 0;
 
                 isGrounded = true;
             }
@@ -76,35 +79,64 @@ namespace Caughman
             }
         }//End ClampToGroundPlane
 
+        private void ClampToSide()
+        {
+            //clamp to sides of play field: (x=-8);
+            if (transform.position.x < -8)//player is too far left:
+            {
+                Vector3 pos = transform.position;
+                pos.x = -8;
+                transform.position = pos;
+
+                velocity.x = 0;
+            }
+
+            //clamp to sides of play field: (x=8);
+            if (transform.position.x >8)//player is too far right:
+            {
+                Vector3 pos = transform.position;
+                pos.x = 8;
+                transform.position = pos;
+
+                velocity.x = 0;
+            }
+        }//End ClampToSide
+
         private void DoPhysicsHorizontal()
         {
             float h = Input.GetAxis("Horizontal");
 
-            veloctiy.x = h * speed;
+            velocity.x = h * speed;
         }
 
         private void DoPhysicsVertical()
         {
             if (Input.GetButtonDown("Jump") && isGrounded)//jump was just pressed
             {
-                veloctiy.y += jumpImpulse;
+                velocity.y += jumpImpulse;
                 isJumping = true;
             }
 
             //if not holding jump, cancel jump
             if (!Input.GetButton("Jump")) isJumping = false;
             //if past jump peak, cancel jump
-            if (veloctiy.y < 0) isJumping = false;
+            if (velocity.y < 0) isJumping = false;
 
 
             //add acceleration to our velocity
             float gravityMultiplier = (isJumping) ? 0.5f : 1;
 
 
-            veloctiy.y -= gravity * Time.deltaTime;
+            velocity.y -= gravity * Time.deltaTime;
         }//End DoPhysicsVertical
 
 
+        public void ApplyFix(Vector3 fix)
+        {
+            if (fix.x != 0) velocity.x = 0;
+            if (fix.y != 0) velocity.y = 0;
+            if (fix.y > 0) isGrounded = true;
+        }//End ApplyFix
 
     }//End Class
 
