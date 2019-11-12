@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 2634383611877199291}
   - component: {fileID: 2634383611877199290}
   - component: {fileID: 2634383611877199237}
-  - component: {fileID: 2634383611877199288}
-  - component: {fileID: 6473185416669920551}
+  - component: {fileID: 7663308700612300718}
+  - component: {fileID: 1551152001125631792}
   m_Layer: 0
   m_Name: Spring
   m_TagString: Untagged
@@ -80,7 +80,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &2634383611877199288
+--- !u!114 &7663308700612300718
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -89,12 +89,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 2634383611877199236}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 660d02df17fd23d44a82a4274b3336c5, type: 3}
+  m_Script: {fileID: 11500000, guid: 70c3e56f0b42ce4498ba775b64c14e76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   size: {x: 1, y: 1, z: 1}
   manual: 0
---- !u!114 &6473185416669920551
+--- !u!114 &1551152001125631792
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
