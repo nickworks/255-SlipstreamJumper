@@ -13,7 +13,12 @@ namespace Breu
         /// <summary>
         /// determines player horizontal (x) speed
         /// </summary>
-        public float HoriSpeed = 5;
+        public float HorizontalSpeed = 5;
+
+        /// <summary>
+        /// player speed multiplyer for when the player is moving left
+        /// </summary>
+        public float LeftSpeedMult = 1.75f;
 
         /// <summary>
         /// Determines player vertical (y) jump
@@ -61,6 +66,7 @@ namespace Breu
         void Start()
         {
             PickUpTimeRemaining = 0;
+            isGroundPounding = false;
             ScreeBounds = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, Camera.main.transform.position.z));
         }
 
@@ -86,7 +92,11 @@ namespace Breu
         private void DoPhysicsHorizontal()
         {
             float h = Input.GetAxis("Horizontal");//get if player is pressing left/right on an axis between -1 & 1
-            PlayerVelocity.x = h * HoriSpeed;//movs player left/right according to Horispeed
+            PlayerVelocity.x = h * HorizontalSpeed;//movs player left/right according to Horispeed
+            if (h < 0)
+            {
+                PlayerVelocity.x = h * LeftSpeedMult * HorizontalSpeed;
+            }
         }
 
         private void DoPhysicsVertical()
