@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 namespace Wynalda
 {
+    /// <summary>
+    /// This script is for our collision.
+    /// </summary>
     public class AABB : MonoBehaviour
     {
 

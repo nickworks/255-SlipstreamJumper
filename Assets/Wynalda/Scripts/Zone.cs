@@ -40,92 +40,110 @@ namespace Wynalda
         //minimum amount of space between platforms
         public float gapSizeMax = 20;
 
+        //Camera!
         Camera cam;
 
+        /// <summary>
+        /// Array of possible textures
+        /// </summary>
         public Texture[] textures;
+        /// <summary>
+        /// Starting Texture
+        /// </summary>
         public Texture startingTexture;
 
+        /// <summary>
+        /// Awake!
+        /// </summary>
         void Awake()
         {
             cam = GetComponent<Camera>();
         }
-
+        
+        //Start!
         void Start() {
             SpawnChunk(true);
             
         }
 
+        //Things that happen often!
         void Update()
         {
+            //Less than 3 chunks? Spawn a new one!
             if (chunks.Count < 3)
             {
-                SpawnChunk();
+                SpawnChunk(); // Spawn chunk!
             }
 
+            //Goodbye chunks we cant see anymore!
             RemoveOffScreenChunks();
         }
 
+        //Removes chunks that are off the screen to prevent memory leak!
         private void RemoveOffScreenChunks()
         {
+            //Fine left of screen to determine where things should die off!
             float limitX = FindScreenLeftX();
-
+            
+            //Removes dead offscreen chunks from arrays.
             for (int i = chunks.Count - 1; i >= 0; i--)
             {
                 if (chunks[i].rightEdge.position.x < limitX)
                 {
                     Chunk chunk = chunks[i];
 
+                    //Goodbye platforms!
                     Platform[] deadPlatforms = chunk.GetComponentsInChildren<Platform>();
                     foreach(Platform platform in deadPlatforms)
                     {
                         platforms.Remove(platform.GetComponent<AABB>());
                     }
+                    //Goodbye springs!
                     Spring[] deadSprings = chunk.GetComponentsInChildren<Spring>();
                     foreach (Spring spring in deadSprings)
                     {
                         springs.Remove(spring.GetComponent<AABB>());
                     }
+                    //Goodbye powerups!
                     Power[] deadPowers = chunk.GetComponentsInChildren<Power>();
                     foreach (Power power in deadPowers)
                     {
                         powers.Remove(power.GetComponent<AABB>());
                     }
               
-                    
-
-
+                    //removing the gameObjects.
                     chunks.RemoveAt(i);
                     Destroy(chunk.gameObject);
                 }
             }
         }
 
+        //Finds left side of screen to determine where chunks should begin to be removed.
         private float FindScreenLeftX()
         {
             Plane xy = new Plane(Vector3.forward, Vector3.zero);
             Ray ray = cam.ScreenPointToRay(new Vector3(0, Screen.height / 2));
 
-            //  Debug.DrawRay(ray.origin,ray.direction * 10, Color.yellow);
-
             if (xy.Raycast(ray, out float dis))
             {
                 Vector3 pt = ray.GetPoint(dis);
-                // limitX = pt.x;
                 return pt.x;
             }
             else return -10;
 
-         //   return limitX;
         }
 
+        //spawn new chunks!
         private void SpawnChunk(bool isStartingPlatform = false)
         {
-            //spawn new chunk:
-
+           
+            //random gap size:
             float gapSize = Random.Range(gapSizeMin,gapSizeMax);
 
+            //position of new chunk in scene
             Vector3 pos = new Vector3(0, -3 , 0);
 
+            //if there are more than zero chunks 
             if (chunks.Count > 0)
             {
 
@@ -134,22 +152,27 @@ namespace Wynalda
                 //  pos.y = -5;
             }
 
+            //random chunk spawning
             int index = Random.Range(0, prefabChunks.Length);
 
+            //chunks!
             Chunk chunk = Instantiate(prefabChunks[index], pos, Quaternion.identity);
             chunks.Add(chunk);
 
+            //spawns in platforms and adds them to array.
             Platform[] newplatforms = chunk.GetComponentsInChildren<Platform>();
             foreach(Platform p in newplatforms)
             {
                 platforms.Add(p.GetComponent<AABB>());
             }
 
+            //spawns in springs and adds them to array.
             Spring[] newsprings = chunk.GetComponentsInChildren<Spring>();
             foreach(Spring s in newsprings)
             {
                 springs.Add(s.GetComponent<AABB>());
             }
+            //spawns in powers and adds them to array.
             Power[] newpowers = chunk.GetComponentsInChildren<Power>();
             foreach (Power u in newpowers)
             {
@@ -198,7 +221,7 @@ namespace Wynalda
 
 
             //check player AABB against every powerup AABB:
-            foreach (AABB power in platforms)
+            foreach (AABB power in powers)
             {
                 if (player.CollidesWith(power))
                 {

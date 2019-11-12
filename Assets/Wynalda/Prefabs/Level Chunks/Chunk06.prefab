@@ -329,11 +329,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1693054281005315288}
     m_Modifications:
-    - target: {fileID: 120934972381329055, guid: a28ec7eb5ff485f489a213257f524177,
-        type: 3}
-      propertyPath: m_Name
-      value: PowerUP
-      objectReference: {fileID: 0}
     - target: {fileID: 5927788039555468671, guid: a28ec7eb5ff485f489a213257f524177,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -342,7 +337,7 @@ PrefabInstance:
     - target: {fileID: 5927788039555468671, guid: a28ec7eb5ff485f489a213257f524177,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.7
+      value: 1.37
       objectReference: {fileID: 0}
     - target: {fileID: 5927788039555468671, guid: a28ec7eb5ff485f489a213257f524177,
         type: 3}
@@ -389,6 +384,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 120934972381329055, guid: a28ec7eb5ff485f489a213257f524177,
+        type: 3}
+      propertyPath: m_Name
+      value: PowerUP
+      objectReference: {fileID: 0}
+    - target: {fileID: 5216985607328571394, guid: a28ec7eb5ff485f489a213257f524177,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: a12dfdf43ad0dba4eb7e5ef686d709c4, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a28ec7eb5ff485f489a213257f524177, type: 3}
 --- !u!4 &43295113041122590 stripped

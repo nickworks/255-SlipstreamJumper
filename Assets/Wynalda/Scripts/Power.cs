@@ -4,12 +4,10 @@ using UnityEngine;
 
 namespace Wynalda
 {
-    [RequireComponent(typeof(AABB))]
+   // [RequireComponent(typeof(AABB))]
     public class Power : MonoBehaviour
     {
-
-        public GameObject pickupEffect;
-
+    
      
 
 
