@@ -34,6 +34,10 @@ namespace Caughman
         /// This is our array of springs AABB
         /// </summary>
         List<AABB> springs = new List<AABB>();
+        /// <summary>
+        /// This is our array of health pickups
+        /// </summary>
+        List<AABB> healthUp = new List<AABB>();
 
         /// <summary>
         /// Collection of available level chunks
@@ -109,6 +113,12 @@ namespace Caughman
                         spikes.Remove(spike.GetComponent<AABB>());
                     }
 
+                    // Remove references to the spike AABBs from the list.
+                   HealthUp[] deadHealth = chunk.GetComponentsInChildren<HealthUp>();
+                    foreach (HealthUp hp in deadHealth)
+                    {
+                        healthUp.Remove(hp.GetComponent<AABB>());
+                    }
 
                     chunks.RemoveAt(i); // Remove the chunk from the list.
                     Destroy(chunk.gameObject); // Remove the chunk from the scene.
@@ -158,10 +168,16 @@ namespace Caughman
                 spikes.Add(sp.GetComponent<AABB>());
             }
 
+            // Add references to the healthup AABBs to the list.
+            HealthUp[] newHealthUp = chunk.GetComponentsInChildren<HealthUp>();
+            foreach (HealthUp hp in newHealthUp)
+            {
+                healthUp.Add(hp.GetComponent<AABB>());
+            }
         }
 
 
-        void LateUpdate()
+        public void LateUpdate()
         {
          foreach(AABB platform in platforms)
             {
@@ -185,7 +201,7 @@ namespace Caughman
 
                     PlayerMovement playerMovement = player.GetComponent<PlayerMovement>();
 
-                    playerMovement.SpringUp(15);
+                    playerMovement.SpringUp(10);
 
                 }
             }
@@ -205,6 +221,32 @@ namespace Caughman
                     PlayerMovement playerMovement = player.GetComponent<PlayerMovement>();
 
                     playerMovement.SpikeHit();
+
+                }
+            }
+
+            foreach (AABB hp in healthUp)
+            {
+                //Check Player AABB against every platform AABB:
+                if (player.CollidesWith(hp))
+                {
+                    //There is a collision!
+
+                    /*HealthUp[] deadHealth = chunk.GetComponentsInChildren<HealthUp>();
+                    foreach (HealthUp hp2 in deadHealth)
+                    {
+                        healthUp.Remove(hp2.GetComponent<AABB>());
+                    }*/
+
+                    if (health <= 3)
+                    {
+                        health = 3;
+                    }
+                    else
+                    {
+                        health++;
+                    }
+                    Debug.Log("Player gained health " + health);
 
                 }
             }

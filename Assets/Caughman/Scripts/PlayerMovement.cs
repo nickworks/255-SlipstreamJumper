@@ -10,7 +10,7 @@ namespace Caughman
         /// <summary>
         /// The speed multiplier for horizontal movement.
         /// </summary>
-        public float speed = 10;
+        public float speed = 20;
 
         /// <summary>
         /// The acceleration due to gravity in meters per seconds squared.
@@ -20,7 +20,7 @@ namespace Caughman
         /// <summary>
         /// the amount of force to use when jumping
         /// </summary>
-        public float jumpImpulse = 5;
+        public float jumpImpulse = 10;
 
 
         /// <summary>
