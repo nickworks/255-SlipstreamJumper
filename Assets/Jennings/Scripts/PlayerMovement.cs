@@ -34,32 +34,41 @@ namespace Jennings {
         /// </summary>
         public Vector3 velocity = new Vector3();
 
-
+        bool timeSlowed = false;
         
 
         void Start()
         {
-
+            
         }
 
-
-        void Update()
+        // Updates PlayerMovement each frame; has timeSlowed originally intended for SlowTime script.
+        public void Update()
         {
             DoPhysicsVertical();
             DoPhysicsHorizontal();
 
-            // add velocity to position
-            transform.position += velocity * Time.deltaTime;
+            if (timeSlowed == false)
+            {
+                // add velocity to position
+                transform.position += velocity * Time.deltaTime;
+            } else if (timeSlowed == true)
+            {
+                transform.position += velocity * Time.deltaTime * 3f;
+            }
 
-            ClampToGroundPlane();
+            isGrounded = false; 
         }
 
-        private void ClampToGroundPlane()
+        /// <summary>
+        ///  This portion is intended to make an invisible ground which the player cannot fall through. Intended for use for the SafeMode.
+        /// </summary>
+        public void ClampToGroundPlane()
         {
             // clamp to ground plane: (y=0)
             if (transform.position.y < 0)
             { // player is below the ground:
-                //transform.position = new Vector3(transform.position.x, 0, 0);
+          
                 Vector3 pos = transform.position;
                 pos.y = 0;
                 transform.position = pos;
@@ -112,9 +121,12 @@ namespace Jennings {
             if (fix.y > 0) isGrounded = true;
         }
 
+
         public void LaunchUpwards(float upwardVel)
         {
             velocity.y = upwardVel;
         }
+
+        
     }
 }

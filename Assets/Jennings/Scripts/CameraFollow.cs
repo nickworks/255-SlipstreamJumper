@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Jennings {
     public class CameraFollow : MonoBehaviour {
-
+        //Makes it so a target can be assigned to camera as well as apply easing
         public Transform target;
         public float easing = 2;
 
@@ -17,14 +17,12 @@ namespace Jennings {
         // Update is called once per frame
         void LateUpdate()
         {
+            //Targets respective object
             if(target != null)
             {
                 Vector3 newPos = target.position;
                 newPos.z = transform.position.z;
-
-                //transform.position += (newPos - transform.position) * Time.deltaTime;
-
-                //Does the exact same thing as the line above
+                
                 transform.position = Vector3.Lerp(transform.position, newPos, Time.deltaTime * easing);
             }
         }

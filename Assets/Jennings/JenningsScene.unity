@@ -174,7 +174,7 @@ Camera:
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 76.62755
-  orthographic: 0
+  orthographic: 1
   orthographic size: 5
   m_Depth: -1
   m_CullingMask:
@@ -199,7 +199,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 615584242}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -6.07}
+  m_LocalPosition: {x: 0, y: 2.44, z: -7.2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -218,11 +218,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 1782267398}
-  prefabPlatform: {fileID: 7708690957413431030, guid: f13406c1f1edfbe4ebaf4a70844105bd,
-    type: 3}
-  gapSizeMin: 2
-  gapSizeMax: 10
-  prefabChunks: []
+  prefabChunks:
+  - {fileID: 823415048695836658, guid: 70bc921fb1867d94eafb0f6b4e5fff27, type: 3}
+  - {fileID: -4589158675779335133, guid: 7dc1c2bcd0e357d4d95853ceb1041db6, type: 3}
+  - {fileID: 2469473499725991302, guid: 96cf089c468d8ee4b94c74e6650b4f4d, type: 3}
+  - {fileID: -3951825424463974573, guid: 812e1f4b44ae19b40bd5075f412340e6, type: 3}
+  gapSizeMin: 10
+  gapSizeMax: 15
 --- !u!114 &615584247
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -235,7 +237,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba7ee978e2e06434fba38b2136be7591, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 1782267396}
+  target: {fileID: 0}
   easing: 2
 --- !u!1 &1486476383
 GameObject:
@@ -342,6 +344,7 @@ GameObject:
   - component: {fileID: 1782267393}
   - component: {fileID: 1782267397}
   - component: {fileID: 1782267398}
+  - component: {fileID: 1782267399}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -379,7 +382,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 50511b75c704c9245b9c6eb2ec29b96b, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -416,7 +419,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1782267392}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6.38, y: 3.43, z: 0}
+  m_LocalPosition: {x: -4.9, y: 5.99, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -451,3 +454,61 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   size: {x: 1.03, y: 1.03, z: 0.42}
+--- !u!114 &1782267399
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1782267392}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d85d7852dec3774b9cc76c4b2573986, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1 &1962528647
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1962528649}
+  - component: {fileID: 1962528648}
+  m_Layer: 0
+  m_Name: PowerUp Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1962528648
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1962528647}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fcd775e23a6ccd44b9568c3fca12ed57, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  safeMode: 0
+  powerupActive: 0
+  powerupLengthCounter: 0
+--- !u!4 &1962528649
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1962528647}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.591261, y: 3.4491885, z: 1.6897516}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

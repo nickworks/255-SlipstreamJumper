@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Jennings {
 
     public class AABB : MonoBehaviour {
-
+        // size of the AABB box
         public Vector3 size;
 
         public Vector3 min { get; private set; }
@@ -21,9 +21,10 @@ namespace Jennings {
 
         void Update()
         {
-            Recalc();
+            Recalc(); // Recalculates to find a gap
         }
 
+        // Finds collisions by searching for a gap between the two objects. If one is found they are not touching.
         public bool CollidesWith(AABB other)
         {
 
@@ -71,7 +72,7 @@ namespace Jennings {
 
             return fix;
         }
-
+        // Recalculate to get the size of te respective object
         public void Recalc()
         {
             Vector3 halfSize = size / 2;
@@ -86,6 +87,7 @@ namespace Jennings {
 
         }
 
+        // Creates the little box to be seen in viewport
         void OnDrawGizmos()
         {
 
@@ -97,7 +99,7 @@ namespace Jennings {
 
             Gizmos.DrawWireCube(transform.position, scaledSize);
         }
-
+        // Applies fix to transformations moved and triggers recalculation.
         public void ApplyFix(Vector3 fix)
         {
             transform.position += fix;

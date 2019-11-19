@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: 2351951518075929043}
   - component: {fileID: 2351951518075929040}
   - component: {fileID: 2351951518075929037}
+  - component: {fileID: 6218467791255751749}
+  - component: {fileID: 4031890240461811993}
   m_Layer: 0
   m_Name: Spring
   m_TagString: Untagged
@@ -92,3 +94,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   size: {x: 1, y: 1, z: 1}
+--- !u!114 &6218467791255751749
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2351951518075929041}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf443bc919586f8439d9171e0bd2ade9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  springiness: 9
+--- !u!114 &4031890240461811993
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2351951518075929041}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2bdbd02d6d565e147a51f19eebb3782e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

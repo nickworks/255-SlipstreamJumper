@@ -25,131 +25,163 @@ namespace Jennings {
         /// AABBs of all springs
         /// </summary>
         List<AABB> springs = new List<AABB>();
-
-        //GameObject prefabSpring;
-        public GameObject prefabPlatform;
+        /// <summary>
+        /// List of Time Slowing Powerups
+        /// </summary>
+        List<AABB> timeballs = new List<AABB>();
+       
+        
 
         // public float delayBetweenPlatforms = 1; CAN DELETE
 
         // float timerPlatforms = 0; CAN DELETE
-
-        public float gapSizeMin = 2;
-        public float gapSizeMax = 10;
 
         /// <summary>
         /// chunkcs we're allowed to spawn
         /// </summary>
         public Chunk[] prefabChunks;
 
+        /// <summary>
+        /// Minimum and maximum of the gaps between the chunks.
+        /// </summary>
+        public float gapSizeMin = 2;
+        public float gapSizeMax = 10;
+        Camera camera1;
+
+        
+
         void Awake()
         {
-            platforms.Clear();
+            camera1 = GetComponent<Camera>();
         }
 
         void Start() {
 
-            /*
-            GameObject spring = Instantiate(prefabSpring, pos + Vector3.up, Quaternion.identity, newPlatform.transform);
-            AABB aabb2 = spring.GetComponent<AABB>();
-            if (aabb2)
-            {
-                springs.Add(aabb2);
-                aabb2.Recalc();
-            }
-            */
         }
 
-        private void SpawnChunk()
-        {
-            /*
-            float gapSize = Random.Range(gapSizeMin, gapSizeMax);
-
-            Vector3 pos = new Vector3();
-
-            if(chunks.Count > 0)
-            {
-                pos.x = chunks[chunks.Count - 1].rightEdge.position.x + gapSize;
-                pos.y = chunks[chunks.Count - 1].rightEdge.position.7
-            }
-
-            int Index // continue this!
-            */
-        }
-
-        private void RemoveOffscreenChunks()
-        {
-            /*
-            float limitX = FindScreenLeftX();
-
-            for(int i = chunks.Count - 1; i >= 0, i--)
-            {
-
-                AABB platform = Chunks[i]; // this line needs fixing!
-                chunks.RemoveAt(i);
-                Destroy(platform.gameObject);
-            }
-            */
-        }
-
+        /// <summary>
+        /// Here we update the game per frame and each frame there is less than 10 chunks another will be spawned. It also triggers removal on the left side of the screen.
+        /// </summary>
         void Update()
         {
-            // timerPlatforms -= Time.deltaTime; CAN DELETE WHEN TIMER PLATFORMS IS DELETED
 
-            if (platforms.Count < 5)
+            if (chunks.Count < 10)
             {
-                SpawnPlatform();
+                SpawnChunk();
             }
-
-            for(int i = platforms.Count - 1; i < platforms.Count; i--)
-            {
-                if (platforms[i].max.x < -13)
-                {
-                    AABB platform = platforms[i];
-
-                    platforms.RemoveAt(i);
-                    Destroy(platform.gameObject);
-                }
-            }
+                RemoveOffscreenChunks();
         }
 
-        private void SpawnPlatform()
+        // Finds the left side of the screen (for the purpose of screen size being manipulated)
+        private float FindScreenLeftX()
         {
-            // Spawn new platforms:
-            // Vector3 places the given platform in a specified location, try using Random.Range(##.#f, ##.#f) instead of a number for some randomness
+            Plane xy = new Plane(Vector3.forward, Vector3.zero);
+            Ray ray = camera1.ScreenPointToRay(new Vector3(0, Screen.height / 2));
 
+            if (xy.Raycast(ray, out float dis))
+            {
+                Vector3 pt = ray.GetPoint(dis);
+                return pt.x;
+
+            }
+
+            return -12;
+        }
+
+        /// <summary>
+        /// This is a function meant ideally to remove chunks to keep the game truly infinite although it is failing to truly destroy them.
+        /// </summary>
+        private void RemoveOffscreenChunks()
+        {
+            // This is to find and determie the point at which is determined as leaving the screen on the left side.
+            float limitX = FindScreenLeftX();
+
+            for (int i = chunks.Count - 1; i >= 0; i--)
+            {
+                if (chunks[i].rightEdge.position.x < limitX)
+                {
+                    Chunk chunk = chunks[i];
+
+                    // Remove references to the platform AABBs from the list.
+                    Platform[] deadPlatforms = chunk.GetComponentsInChildren<Platform>();
+                    foreach (Platform platform in deadPlatforms)
+                    {
+                        platforms.Remove(platform.GetComponent<AABB>());
+                    }
+
+                    // Remove references to the spring AABBs from the list.
+                    Spring[] deadSprings = chunk.GetComponentsInChildren<Spring>();
+                    foreach (Spring spring in deadSprings)
+                    {
+                        springs.Remove(spring.GetComponent<AABB>());
+                    }
+
+                    // Remove references to the timeball AABBs from the list.
+                    SlowTime[] deadTimeballs = chunk.GetComponentsInChildren<SlowTime>();
+                    foreach (SlowTime timeball in deadTimeballs)
+                    {
+                        timeballs.Remove(timeball.GetComponent<AABB>());
+                    }
+
+                    chunks.RemoveAt(i);
+                    Destroy(chunk.gameObject);
+                }
+            }
+
+        }
+
+        
+        /// <summary>
+        /// This is for spawning in chunks to the scene.
+        /// </summary>
+        private void SpawnChunk()
+        {
+            
             float gapSize = Random.Range(gapSizeMin, gapSizeMax);
-            float nextPlatformWidth = 10;
 
             Vector3 pos = new Vector3();
 
-            if (platforms.Count > 0)
+            if(chunks.Count > 0) 
             {
-                AABB lastPlatform = platforms[platforms.Count - 1];
-                pos.x = lastPlatform.max.x + gapSize + nextPlatformWidth/2;
+                pos.x = chunks[chunks.Count - 1].rightEdge.position.x + gapSize;
+                pos.y = chunks[chunks.Count - 1].rightEdge.position.y;
+            }
+            // Begins to instantiate the Chunks 
+            int Index = Random.Range(0, prefabChunks.Length);
+            Chunk chunk = Instantiate(prefabChunks[Index], pos, Quaternion.identity);
+            chunks.Add(chunk);
 
+            // Add references to the platform AABBs to the list.
+            Platform[] newPlatforms = chunk.GetComponentsInChildren<Platform>();
+            foreach (Platform p in newPlatforms)
+            {
+                platforms.Add(p.GetComponent<AABB>());
             }
 
-            GameObject newPlatform = Instantiate(prefabPlatform, pos, Quaternion.identity);
-            // Scale (for width) can't be changed via Instantiate (above) therefore this changes it immeditately after instantiation
-            newPlatform.transform.localScale = new Vector3(nextPlatformWidth, 1, 1);
-            //Original version relating to comment under Spawn New Platforms
-            //GameObject newPlatform = Instantiate(prefabPlatform, new Vector3(5, 0, 0), Quaternion.identity);
+            // Add references to the spring AABBs to the list.
+            Spring[] newSprings = chunk.GetComponentsInChildren<Spring>();
+            foreach (Spring s in newSprings)
+            {
+                springs.Add(s.GetComponent<AABB>());
+            }
 
-            AABB aabb = newPlatform.GetComponent<AABB>();
-            if (aabb) {
-                platforms.Add(aabb);
-                aabb.Recalc();
+            // Add references to the spring AABBs to the list.
+            SlowTime[] newTimeballs = chunk.GetComponentsInChildren<SlowTime>();
+            foreach (SlowTime t in newTimeballs)
+            {
+                timeballs.Add(t.GetComponent<AABB>());
             }
         }
 
-        void LateUpdate() {
+        void LateUpdate()
+        {
 
             // check player AABB against every platform AABB
-            foreach(AABB platform in platforms)
+            foreach (AABB platform in platforms)
             {
                 if (player.CollidesWith(platform))
                 {
-                    // COLLISION!
+                    // This is what detects the collision with the platform
                     Vector3 fix = player.FindFix(platform);
                     player.BroadcastMessage("ApplyFix", fix);
                 }
@@ -162,17 +194,40 @@ namespace Jennings {
 
                 if (player.CollidesWith(spring))
                 {
-                    // boing! 
-                    PlayerMovement mover = player.GetComponent<PlayerMovement>();
-                    if (mover != null)
-                    {
-                        mover.LaunchUpwards(8);
+                    // Seeking Player movement for collision with spring
+                    PlayerMovement playerMovement = player.GetComponent<PlayerMovement>();
+
+                    Spring s = spring.GetComponent<Spring>();
+
+                    if (playerMovement != null)
+                    { // sends player flying upwards
+                        playerMovement.LaunchUpwards(s.springiness);
                     }
                 }
             }
 
-            
+            // check player AABB against every spring AABB:
+            foreach (AABB timeball in timeballs)
+            {
 
+                // Would ideally trigger upon collision with timeball
+                if (player.CollidesWith(timeball))
+                {
+                    // Seeking Player Movement
+                    PlayerMovement playerMovement = player.GetComponent<PlayerMovement>();
+
+                    SlowTime t = timeball.GetComponent<SlowTime>();
+
+                    if (playerMovement != null)
+                    {
+                        // Commented out due to lack of proper functioning
+                       /* if (PlayerMovement.timeSlowed = false)
+                        {
+                            timeSlowed = true;
+                        }*/
+                    }
+                }
+            }
 
         }
 

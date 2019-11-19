@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace Jennings {
-    public class SSpring : MonoBehaviour {
+    [RequireComponent(typeof(AABB))]
+    public class Spring : MonoBehaviour {
+        // The force being applied from the spring.
         public float springiness = 15;
     }
 }
