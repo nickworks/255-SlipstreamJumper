@@ -41,6 +41,11 @@ namespace Takens {
         public List<AABB> powerUps = new List<AABB>();
 
         /// <summary>
+        /// The current AABBs of all spikes in our scene.
+        /// </summary>
+        public List<AABB> spikes = new List<AABB>();
+
+        /// <summary>
         /// Reference to player's PlayerMovement component
         /// </summary>
         [HideInInspector]
@@ -124,6 +129,11 @@ namespace Takens {
                     {
                         powerUps.Remove(pup.GetComponent<AABB>());
                     }
+                    Spike[] deadSpikes = chunk.GetComponentsInChildren<Spike>();
+                    foreach (Spike s in deadSpikes)//removes all spikes in dead chunk
+                    {
+                        spikes.Remove(s.GetComponent<AABB>());
+                    }
                     chunks.RemoveAt(i);
                     Destroy(chunk.gameObject);
                 }
@@ -201,6 +211,11 @@ namespace Takens {
             {
                 powerUps.Add(p.GetComponent<AABB>());
             }
+            Spike[] newSpikes = chunk.GetComponentsInChildren<Spike>();//adds spikes in chunk to spikes array
+            foreach (Spike s in newSpikes)
+            {
+                spikes.Add(s.GetComponent<AABB>());
+            }
         }
         
         /// <summary>
@@ -250,6 +265,14 @@ namespace Takens {
                     GameObject pu = powerUp.gameObject;
                     powerUps.Remove(powerUp);
                     Destroy(pu);
+                }
+            }
+            foreach (AABB spike in spikes) //checks for collisions with all the sike AABBs
+            {
+                if (player.CollidesWith(spike))
+                {
+                    Game.GameOver();
+                    Debug.Log("Game Over!!");
                 }
             }
 
