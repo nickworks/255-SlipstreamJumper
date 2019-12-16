@@ -10,7 +10,7 @@ namespace Caughman
         /// <summary>
         /// The speed multiplier for horizontal movement.
         /// </summary>
-        public float speed = 10;
+        public float speed = 20;
 
         /// <summary>
         /// The acceleration due to gravity in meters per seconds squared.
@@ -20,7 +20,7 @@ namespace Caughman
         /// <summary>
         /// the amount of force to use when jumping
         /// </summary>
-        public float jumpImpulse = 5;
+        public float jumpImpulse = 10;
 
 
         /// <summary>
@@ -72,6 +72,9 @@ namespace Caughman
                 velocity.y = 0;
 
                 isGrounded = true;
+
+
+                
             }
             else
             {
@@ -138,6 +141,21 @@ namespace Caughman
             if (fix.y > 0) isGrounded = true;
         }//End ApplyFix
 
+        public void SpringUp(float velocityY)
+        {
+            velocity.y = velocityY;
+        }//End Spring Up
+
+        public void SpikeHit()
+        {
+            Vector3 pos = transform.position;
+            pos.y = 5;
+            pos.x = -4;
+            transform.position = pos;
+
+            velocity.y = 0;
+        }
+        
     }//End Class
 
 }//End Namespace

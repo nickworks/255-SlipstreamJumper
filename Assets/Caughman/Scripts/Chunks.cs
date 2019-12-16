@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace Caughman
-{
-    public class Game : MonoBehaviour
+{ 
+public class Chunks : MonoBehaviour
     {
-        // Start is called before the first frame update
+
+        public Transform rightEdge;
+        public float edgeX;
+
         void Start()
         {
 
@@ -15,7 +18,7 @@ namespace Caughman
         // Update is called once per frame
         void Update()
         {
-
+            edgeX = rightEdge.position.x;
         }
     }
 }
