@@ -58,6 +58,32 @@ namespace Takens
         /// </summary>
         public Text jumpsLeft;
 
+        /// <summary>
+        /// Trail Object on the player, set via the inspector
+        /// </summary>
+        public GameObject trail;
+
+        /// <summary>
+        /// Double jump particles
+        /// </summary>
+        public GameObject particles;
+
+        /// <summary>
+        /// The actual component of the trail
+        /// </summary>
+        TrailRenderer trailRender;
+
+
+
+        /// <summary>
+        /// Called once on start up, used to set the reference for the trail
+        /// </summary>
+        void Start()
+        {
+            trailRender = trail.GetComponent<TrailRenderer>();
+        }
+        
+
         // Update is called once per frame
         void Update()
         {
@@ -69,10 +95,27 @@ namespace Takens
                 transform.position += velocity * Time.deltaTime;
 
                 //update display text
-             //   jumpsLeft.text = ("Double Jumps Left: " + doubleJumpsLeft);
+                jumpsLeft.text = ("Double Jumps Left: " + doubleJumpsLeft);
 
                 //ClampToGroundPlane();
                 isGrounded = false;
+            }
+            switch (doubleJumpsLeft)
+            {
+                case 0:
+                    trailRender.time = 0f;
+                    break;
+                case 1:
+                    trailRender.time = 2f;
+                    break;
+                case 2:
+                    trailRender.time = 6f;
+                    break;
+                case 3:
+                    trailRender.time = 11f;
+                    break;
+                default:
+                    break;
             }
         }
         /// <summary>
@@ -104,6 +147,7 @@ namespace Takens
                     isJumping = true;
                     canDoubleJump = false;
                     doubleJumpsLeft -= 1;
+                    particles.GetComponent<ParticleSystem>().Play();
                 }
             }
             //if not holding jump, cancel jump
