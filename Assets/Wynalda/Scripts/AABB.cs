@@ -8,10 +8,8 @@ namespace Wynalda
     /// </summary>
     public class AABB : MonoBehaviour
     {
-
-        public Vector3 size;
         public bool manual = false;
-
+        public Vector3 size;
         public Vector3 min { get; private set; }
         public Vector3 max { get; private set; }
 
@@ -78,7 +76,6 @@ namespace Wynalda
         public void Recalc()
         {
             Vector3 halfSize = size / 2;
-
             if (!manual)
             {
                 halfSize.x *= transform.localScale.x;
@@ -98,7 +95,6 @@ namespace Wynalda
 
         void OnDrawGizmos()
         {
-
             if (!manual)
             {
                 Vector3 scaledSize = size;

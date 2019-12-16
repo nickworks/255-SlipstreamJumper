@@ -11,9 +11,8 @@ GameObject:
   - component: {fileID: 6276304514526552709}
   - component: {fileID: 1594232822465065600}
   - component: {fileID: 2918421941162791892}
-  - component: {fileID: 7751737599464047558}
-  - component: {fileID: 1566727875087235330}
   - component: {fileID: 7544241417735485535}
+  - component: {fileID: 5911229760195638886}
   m_Layer: 0
   m_Name: Hazard
   m_TagString: Untagged
@@ -81,33 +80,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!65 &7751737599464047558
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7445125406523084754}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &1566727875087235330
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7445125406523084754}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 660d02df17fd23d44a82a4274b3336c5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  size: {x: 0, y: 0, z: 0}
-  manual: 0
 --- !u!114 &7544241417735485535
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -120,3 +92,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78d6df2e6dfdb474080e8b592f9176c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &5911229760195638886
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7445125406523084754}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70c3e56f0b42ce4498ba775b64c14e76, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  manual: 0
+  size: {x: 0, y: 0, z: 0}
